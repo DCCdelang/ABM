@@ -1,7 +1,7 @@
 import math
 import mesa
 from mesa import Agent
-
+import random
 
 class Citizen(Agent):
     """
@@ -184,3 +184,57 @@ class Cop(Agent):
         self.empty_neighbors = [
             c for c in self.neighborhood if self.model.grid.is_cell_empty(c)
         ]
+
+class News(Agent):
+    def __init__(
+        self,
+        unique_id,
+        model,
+        pos,
+        vision,
+        info_rate = 0.7
+    ):
+        super().__init__(unique_id, model)
+        self.breed = "new"
+        self.pos = pos
+        self.vision = vision
+
+    def step(self):
+        """
+        Inspect local vision and influence quiescent agents
+        """
+        self.update_neighbors()
+        quiescent_neighbors = []
+        for agent in self.neighbors:
+            if (
+                agent.breed == "citizen"
+                and agent.condition == "Quiescent" 
+                # the info influences the agent in becoming active and don't influence
+                # already active agents
+                and agent.jail_sentence == 0
+                and agent.informed == 0 
+            ):
+                quiescent_neighbors.append(agent)
+        if (quiescent_neighbors
+            and  random.random() >= info_rate
+            # the info works at a certain rate
+        ):
+            agent.informed = 1
+            self.risk_aversion += 2
+            self.model.new_agent(News, self.pos)
+        if self.model.movement:
+            new_pos = self.random.choice(self.neighbors)
+            self.model.grid.move_agent(self, new_pos)
+
+    
+    def update_neighbors(self):
+        """
+        Look around and see who my neighbors are.
+        """
+        self.neighborhood = self.model.grid.get_neighborhood(
+            self.pos, moore=False, radius=5
+        )
+        self.neighbors = self.model.grid.get_cell_list_contents(self.neighborhood)
+        #self.empty_neighbors = [
+        #    c for c in self.neighborhood if self.model.grid.is_cell_empty(c)
+        #]
