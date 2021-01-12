@@ -39,6 +39,7 @@ class Citizen(Agent):
         risk_aversion,
         threshold,
         vision,
+        polit_pref,
     ):
         """
         Create a new Citizen.
@@ -68,6 +69,7 @@ class Citizen(Agent):
         self.jail_sentence = 0
         self.grievance = self.hardship * (1 - self.regime_legitimacy)
         self.arrest_probability = None
+        self.polit_pref = polit_pref # ADDED parameter 
 
     def step(self):
         """

@@ -96,6 +96,7 @@ class EpsteinCivilViolence(Model):
                     (x, y),
                     hardship=self.random.random(),
                     regime_legitimacy=self.legitimacy,
+                    polit_pref = self.random.random(), # ADDED parameter 
                     risk_aversion=self.random.random(),
                     threshold=self.active_threshold,
                     vision=self.citizen_vision,
