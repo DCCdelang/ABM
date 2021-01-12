@@ -64,6 +64,7 @@ class EpsteinCivilViolence(Model):
         self.iteration = 0
         self.schedule = RandomActivation(self)
         self.grid = Grid(height, width, torus=True)
+        self.N_agents = 0
         model_reporters = {
             "Quiescent": lambda m: self.count_type_citizens(m, "Quiescent"),
             "Active": lambda m: self.count_type_citizens(m, "Active"),
@@ -104,6 +105,7 @@ class EpsteinCivilViolence(Model):
                 unique_id += 1
                 self.grid[y][x] = citizen
                 self.schedule.add(citizen)
+                self.N_agents += 1
 
         self.running = True
         self.datacollector.collect(self)
