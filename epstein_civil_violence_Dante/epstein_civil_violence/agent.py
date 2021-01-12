@@ -67,7 +67,8 @@ class Citizen(Agent):
         self.condition = "Quiescent"
         self.vision = vision
         self.jail_sentence = 0
-        self.grievance = self.hardship * (1 - self.regime_legitimacy)
+        self.legitimacy_feedback = regime_legitimacy # Change of legitimacy calculation
+        self.grievance = self.hardship * (1 - self.legitimacy_feedback)
         self.arrest_probability = None
         self.polit_pref = polit_pref # ADDED parameter 
 
@@ -80,6 +81,8 @@ class Citizen(Agent):
             return  # no other changes or movements if agent is in jail.
         self.update_neighbors()
         self.update_estimated_arrest_probability()
+        if self.model.iteration > 0:
+            self.update_legitimacy_feedback() # Addition of legitimacy feedback
         net_risk = self.risk_aversion * self.arrest_probability
         if (
             self.condition == "Quiescent"
@@ -124,7 +127,23 @@ class Citizen(Agent):
         self.arrest_probability = 1 - math.exp(
             -1 * self.model.arrest_prob_constant * (cops_in_vision / actives_in_vision)
         )
+    
+    def update_legitimacy_feedback(self):
+        """
+        Attempt to simulate a legitimacy feedback loop as discussed in a paper
+        by Lomos et al 2014. Returns weighted avarage as based on Gilley.
+        """
+        N_quiet = self.model.count_type_citizens(self.model, "Quiescent")
+        N_active = self.model.count_type_citizens(self.model, "Active")
+        N_jailed = self.model.count_type_citizens(self.model, "Jailed")
 
+        L_leg = N_quiet/self.model.N_agents
+        # Zero needs to be replaced by N_fighting --> Still has to be implemented in model/agent
+        L_just = 1/2*(1-N_active + 0) + 1/2*(1-math.exp(-math.log(2)/2*(self.model.N_agents/(N_active + N_jailed + 0))))
+        L_consent = L_leg
+
+        self.legitimacy_feedback = self.regime_legitimacy * (1/4*(L_leg+L_consent)+1/2*L_just)
+        self.grievance = self.hardship * (1 - self.legitimacy_feedback)
 
 class Cop(Agent):
     """
