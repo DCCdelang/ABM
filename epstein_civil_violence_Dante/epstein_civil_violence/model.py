@@ -107,7 +107,6 @@ class EpsteinCivilViolence(Model):
                     threshold=self.active_threshold,
                     vision=self.citizen_vision,
                     legitimacy_feedback=self.legitimacy_feedback, # ADDED parameter
-                    polit_pref = self.random.random(), # ADDED parameter 
                 )
                 unique_id += 1
                 self.grid[y][x] = citizen
