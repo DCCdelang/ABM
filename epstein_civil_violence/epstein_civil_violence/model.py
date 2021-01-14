@@ -43,12 +43,13 @@ class EpsteinCivilViolence(Model):
         citizen_vision=7,
         cop_vision=7,
         legitimacy=0.82,
-        max_jail_term=15,
+        max_jail_term=30,
         active_threshold=0.1,
         arrest_prob_constant=2.3,
         movement=True,
         max_iters=500,
         max_fighting_time=3, # NEW variable
+        smart_cops = False,
     ):
         super().__init__()
         self.height = height
@@ -69,6 +70,7 @@ class EpsteinCivilViolence(Model):
         self.legitimacy_feedback = legitimacy
         self.N_agents = 0
         self.max_fighting_time = max_fighting_time
+        self.smart_cops = smart_cops
         model_reporters = {
             "Quiescent": lambda m: self.count_type_citizens(m, "Quiescent"),
             "Active": lambda m: self.count_type_citizens(m, "Active"),

@@ -44,11 +44,11 @@ model_params = dict(
     height=40,
     width=40,
     citizen_density=0.7,
-    cop_density=0.074,
+    cop_density=0.04,
     citizen_vision=7,
     cop_vision=7,
-    legitimacy=0.8,
-    max_jail_term=1000,
+    legitimacy=0.82,
+    max_jail_term=30,
 )
 
 canvas_element = CanvasGrid(citizen_cop_portrayal, 40, 40, 480, 480)

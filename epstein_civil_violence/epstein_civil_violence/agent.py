@@ -211,32 +211,36 @@ class Cop(Agent):
             arrestee.condition = "Fighting"
             
         elif self.model.movement and self.empty_neighbors:
-            #Ignas: implement "intelligent" movement of cops
-            utilities = []
-            # itterate over available empty spaces for movement
-            for pos in self.empty_neighbors:
-                # gets a list of neighbor objects for every empty position
-                neighbors = self.model.grid.get_neighbors(pos, moore = True, radius = self.vision)
-                # if list not empty, itterate over the agent objects and calculate utility, else assign low utility
-                utility = 0
-                if len(neighbors) > 0:
-                    for agent in neighbors:
-                        if agent.breed == "citizen" and agent.condition == "Active" and agent.jail_sentence == 0:
-                            utility += 10
-                        elif agent.breed == "citizen" and agent.condition == "Quiescent":
-                            utility -= 2
-                        elif agent.breed == "cop":
-                            utility += 5    
-                    utilities.append(utility)
-                else:
-                    utilities.append(-100)
-            
-            new_pos = self.random.choice(self.empty_neighbors)
-            choose position with highest utility and move the cop there
-            max_utility = np.max(utilities)
-            max_utility_ind = utilities.index(max_utility)
-            new_pos = self.empty_neighbors[max_utility_ind]
-            self.model.grid.move_agent(self, new_pos)
+            if self.model.smart_cops:
+                #Ignas: implement "intelligent" movement of cops
+                utilities = []
+                # itterate over available empty spaces for movement
+                for pos in self.empty_neighbors:
+                    # gets a list of neighbor objects for every empty position
+                    neighbors = self.model.grid.get_neighbors(pos, moore = True, radius = self.vision)
+                    # if list not empty, itterate over the agent objects and calculate utility, else assign low utility
+                    utility = 0
+                    if len(neighbors) > 0:
+                        for agent in neighbors:
+                            if agent.breed == "citizen" and agent.condition == "Active" and agent.jail_sentence == 0:
+                                utility += 10
+                            elif agent.breed == "citizen" and agent.condition == "Fighting":
+                                utility += 10
+                            # elif agent.breed == "citizen" and agent.condition == "Quiescent":
+                            #     utility -= 2
+                            # elif agent.breed == "cop":
+                            #     utility += 5    
+                        utilities.append(utility)
+                    else:
+                        utilities.append(-100)
+
+                # choose position with highest utility and move the cop there
+                max_utility = np.max(utilities)
+                max_utility_ind = utilities.index(max_utility)
+                new_pos = self.empty_neighbors[max_utility_ind]
+            else:
+                new_pos = self.random.choice(self.empty_neighbors)
+                self.model.grid.move_agent(self, new_pos)
 
     def update_neighbors(self):
         """

@@ -6,16 +6,21 @@ from epstein_civil_violence.model import EpsteinCivilViolence
 
 import time
 
+cop_density = .04
+legitimacy = .82
+smart_cops = True
+
 start = time.time()
 model = EpsteinCivilViolence(height=40, 
                            width=40, 
                            citizen_density=.7, 
-                           cop_density=.04, 
+                           cop_density=cop_density, 
                            citizen_vision=7, 
                            cop_vision=7, 
-                           legitimacy=.82, 
+                           legitimacy=legitimacy, 
                            max_jail_term=30, 
-                           max_iters=150) # cap the number of steps the model takes
+                           max_iters=500,
+                           smart_cops = smart_cops) # cap the number of steps the model takes
 model.run_model()
 
 finish = time.time()
@@ -30,6 +35,7 @@ ax.set_xlabel('Step')
 ax.set_ylabel('Number of Citizens')
 _ = ax.legend(bbox_to_anchor=(1.35, 1.025))
 plt.tight_layout()
+plt.savefig("figures/plot_"+str(cop_density)+"_"+str(smart_cops)+".png")
 plt.show()
 
 ax = model_out[["Legitimacy"]].plot()
@@ -38,4 +44,5 @@ ax.set_xlabel('Step')
 ax.set_ylabel('Number of Citizens')
 _ = ax.legend(bbox_to_anchor=(1.35, 1.025))
 plt.tight_layout()
+plt.savefig("figures/legit_"+str(cop_density)+"_"+str(smart_cops)+".png")
 plt.show()
