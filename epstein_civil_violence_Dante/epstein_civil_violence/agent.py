@@ -39,7 +39,7 @@ class Citizen(Agent):
         risk_aversion,
         threshold,
         vision,
-        polit_pref,
+        legitimacy_feedback,
     ):
         """
         Create a new Citizen.
@@ -67,22 +67,27 @@ class Citizen(Agent):
         self.condition = "Quiescent"
         self.vision = vision
         self.jail_sentence = 0
-        self.legitimacy_feedback = regime_legitimacy # Change of legitimacy calculation
-        self.grievance = self.hardship * (1 - self.legitimacy_feedback)
+        self.grievance = self.hardship * (1 - self.regime_legitimacy)
         self.arrest_probability = None
-        self.polit_pref = polit_pref # ADDED parameter 
+        self.fighting_time = 0
 
     def step(self):
         """
         Decide whether to activate, then move if applicable.
         """
+        if self.fighting_time:
+            self.fighting_time -= 1
+            return # no other changes or movements if agent is in jail.
         if self.jail_sentence:
             self.jail_sentence -= 1
             return  # no other changes or movements if agent is in jail.
         self.update_neighbors()
         self.update_estimated_arrest_probability()
-        if self.model.iteration > 0:
-            self.update_legitimacy_feedback() # Addition of legitimacy feedback
+
+        self.regime_legitimacy = self.model.legitimacy_feedback # Change of legitimacy calculation
+
+        # if self.model.iteration > 0:
+        #     self.update_legitimacy_feedback() # Addition of legitimacy feedback
         net_risk = self.risk_aversion * self.arrest_probability
         if (
             self.condition == "Quiescent"
@@ -125,25 +130,25 @@ class Citizen(Agent):
             ):
                 actives_in_vision += 1
         self.arrest_probability = 1 - math.exp(
-            -1 * self.model.arrest_prob_constant * (cops_in_vision / actives_in_vision)
+            -1 * self.model.arrest_prob_constant * (cops_in_vision / (actives_in_vision+1)) # Changed with added A+1 instead of A
         )
     
-    def update_legitimacy_feedback(self):
-        """
-        Attempt to simulate a legitimacy feedback loop as discussed in a paper
-        by Lomos et al 2014. Returns weighted avarage as based on Gilley.
-        """
-        N_quiet = self.model.count_type_citizens(self.model, "Quiescent")
-        N_active = self.model.count_type_citizens(self.model, "Active")
-        N_jailed = self.model.count_type_citizens(self.model, "Jailed")
+    # def update_legitimacy_feedback(self):
+    #     """
+    #     Attempt to simulate a legitimacy feedback loop as discussed in a paper
+    #     by Lomos et al 2014. Returns weighted avarage as based on Gilley.
+    #     """
+    #     N_quiet = self.model.count_type_citizens(self.model, "Quiescent")
+    #     N_active = self.model.count_type_citizens(self.model, "Active")
+    #     N_jailed = self.model.count_type_citizens(self.model, "Jailed")
 
-        L_leg = N_quiet/self.model.N_agents
-        # Zero needs to be replaced by N_fighting --> Still has to be implemented in model/agent
-        L_just = 1/2*(1-N_active + 0) + 1/2*(1-math.exp(-math.log(2)/2*(self.model.N_agents/(N_active + N_jailed + 0))))
-        L_consent = L_leg
+    #     L_leg = N_quiet/self.model.N_agents
+    #     # Zero needs to be replaced by N_fighting --> Still has to be implemented in model/agent
+    #     L_just = 1/2*(1-N_active + 0) + 1/2*(1-math.exp(-math.log(2)/2*(self.model.N_agents/(N_active + N_jailed + 0 + 1))))
+    #     L_consent = L_leg
 
-        self.legitimacy_feedback = self.regime_legitimacy * (1/4*(L_leg+L_consent)+1/2*L_just)
-        self.grievance = self.hardship * (1 - self.legitimacy_feedback)
+    #     self.legitimacy_feedback = self.regime_legitimacy * (1/4*(L_leg+L_consent)+1/2*L_just)
+    #     self.grievance = self.hardship * (1 - self.legitimacy_feedback)
 
 class Cop(Agent):
     """
@@ -171,12 +176,17 @@ class Cop(Agent):
         self.breed = "cop"
         self.pos = pos
         self.vision = vision
+        self.fighting = 0
 
     def step(self):
         """
         Inspect local vision and arrest a random active agent. Move if
         applicable.
         """
+        if self.fighting > 0:
+            self.fighting -= 1
+            return
+
         self.update_neighbors()
         active_neighbors = []
         for agent in self.neighbors:
@@ -188,8 +198,17 @@ class Cop(Agent):
                 active_neighbors.append(agent)
         if active_neighbors:
             arrestee = self.random.choice(active_neighbors)
-            sentence = self.random.randint(0, self.model.max_jail_term)
-            arrestee.jail_sentence = sentence
+            if arrestee.condition == "Active" and arrestee.fighting_time == 0:
+                arrestee.fighting_time = self.random.randint(0,self.model.max_fighting_time)
+                arrestee.condition = "Fighting"
+                self.fighting = arrestee.fighting_time
+                return
+
+            elif arrestee.condition == "Fighting" and arrestee.fighting_time == 0:
+                sentence = self.random.randint(0, self.model.max_jail_term)
+                arrestee.jail_sentence = sentence
+                arrestee.condition == "Jailed"
+
         if self.model.movement and self.empty_neighbors:
             new_pos = self.random.choice(self.empty_neighbors)
             self.model.grid.move_agent(self, new_pos)

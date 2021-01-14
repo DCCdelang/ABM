@@ -2,6 +2,7 @@ from mesa import Model
 from mesa.time import RandomActivation
 from mesa.space import Grid
 from mesa.datacollection import DataCollector
+import math
 
 from .agent import Cop, Citizen
 
@@ -47,6 +48,7 @@ class EpsteinCivilViolence(Model):
         arrest_prob_constant=2.3,
         movement=True,
         max_iters=1000,
+        max_fighting_time=15, # NEW variable
     ):
         super().__init__()
         self.height = height
@@ -65,10 +67,14 @@ class EpsteinCivilViolence(Model):
         self.schedule = RandomActivation(self)
         self.grid = Grid(height, width, torus=True)
         self.N_agents = 0
+        self.legitimacy_feedback = legitimacy
+        self.max_fighting_time = max_fighting_time
         model_reporters = {
             "Quiescent": lambda m: self.count_type_citizens(m, "Quiescent"),
             "Active": lambda m: self.count_type_citizens(m, "Active"),
             "Jailed": lambda m: self.count_jailed(m),
+            "Fighting": lambda m: self.count_fighting(m),
+            "Legitimacy": lambda m: self.update_legitimacy_feedback(m),
         }
         agent_reporters = {
             "x": lambda a: a.pos[0],
@@ -97,10 +103,10 @@ class EpsteinCivilViolence(Model):
                     (x, y),
                     hardship=self.random.random(),
                     regime_legitimacy=self.legitimacy,
-                    polit_pref = self.random.random(), # ADDED parameter 
                     risk_aversion=self.random.random(),
                     threshold=self.active_threshold,
                     vision=self.citizen_vision,
+                    legitimacy_feedback=self.legitimacy_feedback, # ADDED parameter
                 )
                 unique_id += 1
                 self.grid[y][x] = citizen
@@ -114,12 +120,32 @@ class EpsteinCivilViolence(Model):
         """
         Advance the model by one step and collect data.
         """
+        self.legitimacy_feedback = self.update_legitimacy_feedback(self)
         self.schedule.step()
         # collect data
         self.datacollector.collect(self)
         self.iteration += 1
         if self.iteration > self.max_iters:
             self.running = False
+    
+    @staticmethod
+    def update_legitimacy_feedback(model):
+        """
+        Attempt to simulate a legitimacy feedback loop as discussed in a paper
+        by Lomos et al 2014. Returns weighted avarage as based on Gilley.
+        """
+        N_quiet = model.count_type_citizens(model, "Quiescent")
+        N_active = model.count_type_citizens(model, "Active")
+        N_jailed = model.count_jailed(model)
+        N_fighting = model.count_fighting(model)
+
+        L_leg = N_quiet/model.N_agents
+        # Zero needs to be replaced by N_fighting --> Still has to be implemented in model/agent
+        L_just = 1/2*(1-((N_active+N_fighting)/model.N_agents)) + 1/2*(1-math.exp(-math.log(2)/2*(model.N_agents/(N_active + N_jailed + N_fighting + 1))))
+        L_consent = L_leg
+    
+        return model.legitimacy * (1/4*(L_leg+L_consent)+1/2*L_just)
+
 
     @staticmethod
     def count_type_citizens(model, condition, exclude_jailed=True):
@@ -144,5 +170,16 @@ class EpsteinCivilViolence(Model):
         count = 0
         for agent in model.schedule.agents:
             if agent.breed == "citizen" and agent.jail_sentence:
+                count += 1
+        return count
+    
+    @staticmethod
+    def count_fighting(model):
+        """
+        Helper method to count jailed agents.
+        """
+        count = 0
+        for agent in model.schedule.agents:
+            if agent.breed == "citizen" and agent.fighting_time:
                 count += 1
         return count
