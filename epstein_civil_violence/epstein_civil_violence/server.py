@@ -8,6 +8,7 @@ from .agent import Citizen, Cop
 COP_COLOR = "#000000"
 AGENT_QUIET_COLOR = "#0066CC"
 AGENT_REBEL_COLOR = "#CC0000"
+AGENT_FIGHT_COLOR = "#52eb34"
 JAIL_COLOR = "#757575"
 
 
@@ -27,6 +28,7 @@ def citizen_cop_portrayal(agent):
             AGENT_QUIET_COLOR if agent.condition == "Quiescent" else AGENT_REBEL_COLOR
         )
         color = JAIL_COLOR if agent.jail_sentence else color
+        color = AGENT_FIGHT_COLOR if agent.condition == "Fighting" else color
         portrayal["Color"] = color
         portrayal["r"] = 0.8
         portrayal["Layer"] = 0
