@@ -77,6 +77,7 @@ class Citizen(Agent):
             self.jail_sentence -= 1
             #Louky: (4) after a jailed agent comes out of jail, her state is set to quiet instead of her previous state before arrest (active).
             if not self.jail_sentence:
+
                 self.condition = "Quiescent"
             
             
