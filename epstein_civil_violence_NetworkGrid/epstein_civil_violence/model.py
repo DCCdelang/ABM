@@ -4,8 +4,15 @@ from mesa.space import Grid
 from mesa.datacollection import DataCollector
 
 from .agent import Cop, Citizen
+import random
+
+
+# network
+import networkx as nx
+from mesa.space import NetworkGrid
 
 import math
+
 
 class EpsteinCivilViolence(Model):
     """
@@ -36,8 +43,8 @@ class EpsteinCivilViolence(Model):
 
     def __init__(
         self,
-        height=40,
-        width=40,
+        n_nodes=100,
+        links=5,
         citizen_density=0.7,
         cop_density=0.04,
         citizen_vision=7,
@@ -48,12 +55,12 @@ class EpsteinCivilViolence(Model):
         arrest_prob_constant=2.3,
         movement=True,
         max_iters=500,
-        max_fighting_time=3, # NEW variable
-        smart_cops = False,
+        max_fighting_time=3,  # NEW variable
+        smart_cops=False,
     ):
         super().__init__()
-        self.height = height
-        self.width = width
+        self.n_nodes = n_nodes
+        self.links = links
         self.citizen_density = citizen_density
         self.cop_density = cop_density
         self.citizen_vision = citizen_vision
@@ -66,7 +73,9 @@ class EpsteinCivilViolence(Model):
         self.max_iters = max_iters
         self.iteration = 0
         self.schedule = RandomActivation(self)
-        self.grid = Grid(height, width, torus=True)
+        self.G = nx.barabasi_albert_graph(n_nodes, links)
+        self.grid = NetworkGrid(self.G)
+        #self.grid = Grid(height, width, torus=True)
         self.legitimacy_feedback = legitimacy
         self.N_agents = 0
         self.max_fighting_time = max_fighting_time
@@ -79,8 +88,7 @@ class EpsteinCivilViolence(Model):
             "Legitimacy": lambda m: self.update_legitimacy_feedback(m),
         }
         agent_reporters = {
-            "x": lambda a: a.pos[0],
-            "y": lambda a: a.pos[1],
+            "node": lambda a: a.pos,
             "breed": lambda a: a.breed,
             "jail_sentence": lambda a: getattr(a, "jail_sentence", None),
             "condition": lambda a: getattr(a, "condition", None),
@@ -91,28 +99,37 @@ class EpsteinCivilViolence(Model):
         )
         unique_id = 0
         if self.cop_density + self.citizen_density > 1:
-            raise ValueError("Cop density + citizen density must be less than 1")
-        for (contents, x, y) in self.grid.coord_iter():
+            raise ValueError(
+                "Cop density + citizen density must be less than 1")
+
+        # cops = self.random.sample(self.G.nodes()), int(self.cop_density*self.n_nodes))
+        # for node in self.grid.get_cell_list_contents
+        for i, node in enumerate(self.G.nodes()):
             if self.random.random() < self.cop_density:
-                cop = Cop(unique_id, self, (x, y), vision=self.cop_vision)
+                cop = Cop(unique_id, self, node, vision=self.cop_vision)
                 unique_id += 1
-                self.grid[y][x] = cop
+
                 self.schedule.add(cop)
+                # add cop to the node
+                self.grid.place_agent(cop, node)
+
             elif self.random.random() < (self.cop_density + self.citizen_density):
                 citizen = Citizen(
                     unique_id,
                     self,
-                    (x, y),
+                    node,
                     hardship=self.random.random(),
                     regime_legitimacy=self.legitimacy,
                     risk_aversion=self.random.random(),
                     threshold=self.active_threshold,
                     vision=self.citizen_vision,
-                    legitimacy_feedback=self.legitimacy_feedback, # ADDED parameter
+                    legitimacy_feedback=self.legitimacy_feedback,  # ADDED parameter
                 )
                 unique_id += 1
-                self.grid[y][x] = citizen
+
                 self.schedule.add(citizen)
+                self.grid.place_agent(citizen, node)
+
                 self.N_agents += 1
 
         self.running = True
@@ -144,9 +161,10 @@ class EpsteinCivilViolence(Model):
 
         L_leg = N_quiet/model.N_agents
         # Zero needs to be replaced by N_fighting --> Still has to be implemented in model/agent
-        L_just = 1/2*(1-((N_active+N_fighting)/model.N_agents)) + 1/2*(1-math.exp(-math.log(2)/2*(model.N_agents/(N_active + N_jailed + N_fighting + 1))))
+        L_just = 1/2*(1-((N_active+N_fighting)/model.N_agents)) + 1/2*(
+            1-math.exp(-math.log(2)/2*(model.N_agents/(N_active + N_jailed + N_fighting + 1))))
         L_consent = L_leg
-    
+
         return model.legitimacy * (1/4*(L_leg+L_consent)+1/2*L_just)
 
     @staticmethod
