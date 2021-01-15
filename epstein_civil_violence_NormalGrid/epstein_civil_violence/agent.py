@@ -63,12 +63,13 @@ class Citizen(Agent):
         self.pos = pos
         self.hardship = hardship
         self.regime_legitimacy = regime_legitimacy
+        self.feedback_legitimacy = regime_legitimacy
         self.risk_aversion = risk_aversion
         self.threshold = threshold
         self.condition = "Quiescent"
         self.vision = vision
         self.jail_sentence = 0
-        self.grievance = self.hardship * (1 - self.regime_legitimacy)
+        self.grievance = self.hardship * (1 - self.feedback_legitimacy)
         self.arrest_probability = None
         self.fighting_time_cit = 0
 
@@ -91,7 +92,15 @@ class Citizen(Agent):
 
         self.update_neighbors()
         self.update_estimated_arrest_probability()
-        self.regime_legitimacy = self.model.legitimacy_feedback # Change of legitimacy calculation
+
+        if self.model.legitimacy_kind == "Fixed":
+            self.regime_legitimacy
+
+        elif self.model.legitimacy_kind == "Global":
+            self.feedback_legitimacy = self.model.legitimacy_feedback 
+
+        elif self.model.legitimacy_kind == "Local":
+            self.feedback_legitimacy = self.update_legitimacy_feedback() 
 
         net_risk = self.risk_aversion * self.arrest_probability
         if (
@@ -147,6 +156,36 @@ class Citizen(Agent):
             -1 * self.model.arrest_prob_constant * (self.ratio_c_a )
         )
 
+    def update_legitimacy_feedback(self):
+        """
+        Attempt to simulate a legitimacy feedback loop as discussed in a paper
+        by Lomos et al 2014. Returns weighted avarage as based on Gilley.
+        """
+        self.N_quiet = 0
+        self.N_active = 0
+        self.N_jailed = 0
+        self.N_agents = 0
+        self.N_fighting = 0
+        for c in self.neighbors:
+            if c.breed == "citizen":
+                self.N_agents += 1
+                if c.condition == "Quiescent":
+                    self.N_quiet += 1
+                elif c.condition == "Active":
+                    self.N_active += 1
+                elif c.condition == "Fighting":
+                    self.N_fighting += 1
+                elif c.condition == "Jailed":
+                    self.N_jailed += 1
+        
+        L_leg = self.N_quiet/self.N_agents
+        L_just = 1/2*(1-((self.N_active + self.N_fighting)/self.N_agents)) + 1/2*(1-math.exp(-math.log(2)/2*(self.N_agents/(self.N_active + self.N_jailed + self.N_fighting + 1))))
+        L_consent = L_leg
+        # print(self.N_quiet,self.N_active,self.N_jailed,self.N_fighting,self.N_agents)
+        # print(L_leg,L_consent,L_just)
+        # raise ValueError
+
+        return self.regime_legitimacy * (1/4*(L_leg+L_consent)+1/2*L_just)
 
 class Cop(Agent):
     """

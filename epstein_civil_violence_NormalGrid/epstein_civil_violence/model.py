@@ -48,8 +48,9 @@ class EpsteinCivilViolence(Model):
         arrest_prob_constant=2.3,
         movement=True,
         max_iters=500,
-        max_fighting_time=3, # NEW variable
+        max_fighting_time=1, # NEW variable
         smart_cops = False,
+        legitimacy_kind = "Global", # choose between "Fixed","Global","Local"
     ):
         super().__init__()
         self.height = height
@@ -67,6 +68,7 @@ class EpsteinCivilViolence(Model):
         self.iteration = 0
         self.schedule = RandomActivation(self)
         self.grid = Grid(height, width, torus=True)
+        self.legitimacy_kind = legitimacy_kind
         self.legitimacy_feedback = legitimacy
         self.N_agents = 0
         self.max_fighting_time = max_fighting_time
@@ -76,7 +78,7 @@ class EpsteinCivilViolence(Model):
             "Active": lambda m: self.count_type_citizens(m, "Active"),
             "Jailed": lambda m: self.count_jailed(m),
             "Fighting": lambda m: self.count_fighting(m),
-            "Legitimacy": lambda m: self.update_legitimacy_feedback(m),
+            "Legitimacy": lambda m: self.legitimacy_feedback,
         }
         agent_reporters = {
             "x": lambda a: a.pos[0],
@@ -85,6 +87,7 @@ class EpsteinCivilViolence(Model):
             "jail_sentence": lambda a: getattr(a, "jail_sentence", None),
             "condition": lambda a: getattr(a, "condition", None),
             "arrest_probability": lambda a: getattr(a, "arrest_probability", None),
+            "Legitimacy": lambda a: getattr(a, "feedback_legitimacy", None),   
         }
         self.datacollector = DataCollector(
             model_reporters=model_reporters, agent_reporters=agent_reporters
@@ -92,7 +95,7 @@ class EpsteinCivilViolence(Model):
         unique_id = 0
         if self.cop_density + self.citizen_density > 1:
             raise ValueError("Cop density + citizen density must be less than 1")
-        for (contents, x, y) in self.grid.coord_iter():
+        for (_, x, y) in self.grid.coord_iter():
             if self.random.random() < self.cop_density:
                 cop = Cop(unique_id, self, (x, y), vision=self.cop_vision)
                 unique_id += 1
@@ -122,7 +125,8 @@ class EpsteinCivilViolence(Model):
         """
         Advance the model by one step and collect data.
         """
-        self.legitimacy_feedback = self.update_legitimacy_feedback(self)
+        if self.legitimacy_kind == "Global":
+            self.legitimacy_feedback = self.update_legitimacy_feedback(self)
         self.schedule.step()
         # collect data
         self.datacollector.collect(self)
@@ -146,6 +150,9 @@ class EpsteinCivilViolence(Model):
         # Zero needs to be replaced by N_fighting --> Still has to be implemented in model/agent
         L_just = 1/2*(1-((N_active+N_fighting)/model.N_agents)) + 1/2*(1-math.exp(-math.log(2)/2*(model.N_agents/(N_active + N_jailed + N_fighting + 1))))
         L_consent = L_leg
+        # print(N_quiet,N_active,N_jailed,N_fighting,model.N_agents)
+        # print(L_leg,L_consent,L_just)
+        # raise ValueError
     
         return model.legitimacy * (1/4*(L_leg+L_consent)+1/2*L_just)
 
