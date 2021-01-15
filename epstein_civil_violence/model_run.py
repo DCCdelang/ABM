@@ -6,9 +6,9 @@ from epstein_civil_violence.model import EpsteinCivilViolence
 
 import time
 
-cop_density = .04
+cop_density = .074
 legitimacy = .82
-smart_cops = True
+smart_cops = False
 
 start = time.time()
 model = EpsteinCivilViolence(height=40, 
@@ -19,8 +19,8 @@ model = EpsteinCivilViolence(height=40,
                            cop_vision=7, 
                            legitimacy=legitimacy, 
                            max_jail_term=30, 
-                           max_iters=500,
-                           smart_cops = smart_cops) # cap the number of steps the model takes
+                           max_iters=500, # cap the number of steps the model takes
+                           smart_cops = smart_cops) 
 model.run_model()
 
 finish = time.time()
