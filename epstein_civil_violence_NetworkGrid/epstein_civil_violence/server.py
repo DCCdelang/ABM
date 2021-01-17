@@ -11,7 +11,7 @@ from mesa.visualization.modules import ChartModule
 from mesa.visualization.modules import NetworkModule
 
 
-COP_COLOR = "#000000"
+COP_COLOR = "#800080"
 AGENT_QUIET_COLOR = "#0066CC"
 AGENT_REBEL_COLOR = "#CC0000"
 AGENT_FIGHT_COLOR = "#52eb34"
@@ -22,20 +22,22 @@ def network_portrayal(G):
     # The model ensures there is 0 or 1 agent per node
 
     def node_color(agent):
-        if type(agent) is Citizen:
-            color = (
-                AGENT_QUIET_COLOR if agent.condition == "Quiescent" else AGENT_REBEL_COLOR
-            )
-            color = JAIL_COLOR if agent.jail_sentence else color
-            color = AGENT_FIGHT_COLOR if agent.condition == "Fighting" else color
-
-        elif type(agent) is Cop:
-            color = COP_COLOR
-
+        if not agent: 
+            color =  "#000000"
         else:
-            color = "#800080"
+            if len(agent) > 1:
+                color =  AGENT_FIGHT_COLOR 
 
-       
+            elif type(agent[0]) is Citizen:
+                color = (
+                    AGENT_QUIET_COLOR if agent[0].condition == "Quiescent" else AGENT_REBEL_COLOR
+                )
+                color = JAIL_COLOR if agent[0].jail_sentence else color
+                color = AGENT_FIGHT_COLOR if agent[0].condition == "Fighting" else color
+
+            elif type(agent[0]) is Cop:
+                color = COP_COLOR
+        
         return color
 
 
@@ -43,9 +45,9 @@ def network_portrayal(G):
     portrayal["nodes"] = [
         {
             "id": node_id,
-            "size": 3 if agents else 1,
+            "size": 5 if agents else 2,
             "color": node_color(agents),
-        S
+        
         }
         for (node_id, agents) in G.nodes.data("agent")
     ]
@@ -85,5 +87,5 @@ model_params = dict(
 server = ModularServer(
     EpsteinCivilViolence, [network, chart], "Epstein Civil Violence", model_params
 )
-server.port = 8521
+server.port = 8523
 
