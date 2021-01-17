@@ -111,13 +111,19 @@ class Citizen(Agent):
         """
         Look around and see who my neighbors are
         """
-        self.neighborhood = self.model.grid.get_neighborhood(
-            self.pos, moore=False, radius=self.vision
-        )
-        self.neighbors = self.model.grid.get_cell_list_contents(self.neighborhood)
+
+        self.neighbors = self.model.grid.get_neighbors(self.pos)
+
+        
+
+        
         self.empty_neighbors = [
-            c for c in self.neighborhood if self.model.grid.is_cell_empty(c)
+            c for c in self.neighbors if self.model.grid.is_cell_empty(c)
         ]
+
+        self.neighbors = self.model.grid.get_cell_list_contents(self.neighbors)
+
+        
 
     def update_estimated_arrest_probability(self):
         """
@@ -246,10 +252,10 @@ class Cop(Agent):
         """
         Look around and see who my neighbors are.
         """
-        self.neighborhood = self.model.grid.get_neighborhood(
-            self.pos, moore=False, radius=self.vision
-        )
-        self.neighbors = self.model.grid.get_cell_list_contents(self.neighborhood)
+        self.neighbors = self.model.grid.get_neighbors(self.pos)
         self.empty_neighbors = [
-            c for c in self.neighborhood if self.model.grid.is_cell_empty(c)
+            c for c in self.neighbors if self.model.grid.is_cell_empty(c)
         ]
+
+        self.neighbors = self.model.grid.get_cell_list_contents(self.neighbors)
+

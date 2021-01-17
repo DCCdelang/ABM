@@ -4,54 +4,101 @@ from mesa.visualization.modules import CanvasGrid
 from .model import EpsteinCivilViolence
 from .agent import Citizen, Cop
 
+  
+from mesa.visualization.ModularVisualization import ModularServer
+from mesa.visualization.UserParam import UserSettableParameter
+from mesa.visualization.modules import ChartModule
+from mesa.visualization.modules import NetworkModule
 
-COP_COLOR = "#000000"
-AGENT_QUIET_COLOR = "#0066CC"
-AGENT_REBEL_COLOR = "#CC0000"
-AGENT_FIGHT_COLOR = "#52eb34"
-JAIL_COLOR = "#757575"
+
+COP_COLOR = "#800080" #purple
+AGENT_QUIET_COLOR = "#0066CC" #blue
+AGENT_REBEL_COLOR = "#CC0000" #red
+AGENT_FIGHT_COLOR = "#52eb34" #green
+JAIL_COLOR = "#757575" #grey
 
 
-def citizen_cop_portrayal(agent):
-    if agent is None:
-        return
+def network_portrayal(G):
+    # The model ensures there is 0 or 1 agent per node
 
-    portrayal = {
-        "Shape": "circle",
-        "x": agent.pos[0],
-        "y": agent.pos[1],
-        "Filled": "true",
-    }
+    def node_color(agent):
+        if not agent: 
+            color =  "#000000"
+        else:
+            if len(agent) > 1:
+                color =  AGENT_FIGHT_COLOR 
 
-    if type(agent) is Citizen:
-        color = (
-            AGENT_QUIET_COLOR if agent.condition == "Quiescent" else AGENT_REBEL_COLOR
-        )
-        color = JAIL_COLOR if agent.jail_sentence else color
-        color = AGENT_FIGHT_COLOR if agent.condition == "Fighting" else color
-        portrayal["Color"] = color
-        portrayal["r"] = 0.8
-        portrayal["Layer"] = 0
+            elif type(agent[0]) is Citizen:
+                color = (
+                    AGENT_QUIET_COLOR if agent[0].condition == "Quiescent" else AGENT_REBEL_COLOR
+                )
+                color = JAIL_COLOR if agent[0].jail_sentence else color
+                color = AGENT_FIGHT_COLOR if agent[0].condition == "Fighting" else color
 
-    elif type(agent) is Cop:
-        portrayal["Color"] = COP_COLOR
-        portrayal["r"] = 0.5
-        portrayal["Layer"] = 1
+            elif type(agent[0]) is Cop:
+                color = COP_COLOR
+        
+        return color
+
+
+    portrayal = dict()
+    portrayal["nodes"] = [
+        {
+            "id": node_id,
+            "size": 5 if agents else 2,
+            "color": node_color(agents),
+        
+        }
+        for (node_id, agents) in G.nodes.data("agent")
+    ]
+
+    portrayal["edges"] = [
+        {
+            "id": edge_id, 
+            "source": source, 
+            "target": target, 
+            "color": "#000000"}
+        for edge_id, (source, target) in enumerate(G.edges)
+    ]
+
     return portrayal
 
-
-model_params = dict(
-    height=40,
-    width=40,
-    citizen_density=0.7,
-    cop_density=0.04,
-    citizen_vision=7,
-    cop_vision=7,
-    legitimacy=0.82,
-    max_jail_term=30,
+network = NetworkModule(network_portrayal, 1000, 1000, library="d3")
+chart = ChartModule(
+    [{"Label": "Active", "Color": "Red"}, {"Label": "Quiescent", "Color": "Blue"}, {"Label": "Jailed", "Color": "Grey"}], data_collector_name="datacollector"
 )
 
-canvas_element = CanvasGrid(citizen_cop_portrayal, 40, 40, 480, 480)
+chart2 = ChartModule([{"Label": "Legitimacy", "Color": "Blue"}])
+
+
+
+model_params = {
+    "n_nodes": UserSettableParameter(
+        "slider",
+        "Number of Nodes",
+        100,
+        10,
+        1000,
+        1,
+        description="Choose how many nodes to include in the model",
+    ),
+    #n_nodes=400,
+    "links": UserSettableParameter(
+        "slider",
+        "Number of links of each agent",
+        5,
+        10,
+        100,
+        1,
+        description="Choose how many links to include in the model",
+    )
+
+
+}
+
+
 server = ModularServer(
-    EpsteinCivilViolence, [canvas_element], "Epstein Civil Violence", model_params
+    EpsteinCivilViolence, [network, chart, chart2], "Epstein Civil Violence", model_params
 )
+server.port = 8523
+
