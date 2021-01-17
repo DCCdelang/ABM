@@ -11,8 +11,8 @@ legitimacy = .82
 smart_cops = False
 
 start = time.time()
-model = EpsteinCivilViolence(n_nodes=1000, 
-                           links=30, 
+model = EpsteinCivilViolence(n_nodes=1600, 
+                           links=112, 
                            citizen_density=.7, 
                            cop_density=0.04, 
                            citizen_vision=7, 
