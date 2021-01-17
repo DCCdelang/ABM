@@ -11,11 +11,11 @@ from mesa.visualization.modules import ChartModule
 from mesa.visualization.modules import NetworkModule
 
 
-COP_COLOR = "#800080"
-AGENT_QUIET_COLOR = "#0066CC"
-AGENT_REBEL_COLOR = "#CC0000"
-AGENT_FIGHT_COLOR = "#52eb34"
-JAIL_COLOR = "#757575"
+COP_COLOR = "#800080" #purple
+AGENT_QUIET_COLOR = "#0066CC" #blue
+AGENT_REBEL_COLOR = "#CC0000" #red
+AGENT_FIGHT_COLOR = "#52eb34" #green
+JAIL_COLOR = "#757575" #grey
 
 
 def network_portrayal(G):
@@ -65,27 +65,40 @@ def network_portrayal(G):
 
 network = NetworkModule(network_portrayal, 1000, 1000, library="d3")
 chart = ChartModule(
-    [{"Label": "Active", "Color": "Red"}], data_collector_name="datacollector"
+    [{"Label": "Active", "Color": "Red"}, {"Label": "Quiescent", "Color": "Blue"}, {"Label": "Jailed", "Color": "Grey"}], data_collector_name="datacollector"
 )
 
+chart2 = ChartModule([{"Label": "Legitimacy", "Color": "Blue"}])
 
 
-model_params = dict(
-    n_nodes=400,
-    links=5,
-    citizen_density=0.7,
-    cop_density=0.04,
-    citizen_vision=7,
-    cop_vision=7,
-    legitimacy=0.82,
-    max_jail_term=30,
-    smart_cops = False,
-    max_fighting_time = 1
-)
+
+model_params = {
+    "n_nodes": UserSettableParameter(
+        "slider",
+        "Number of Nodes",
+        100,
+        10,
+        1000,
+        1,
+        description="Choose how many nodes to include in the model",
+    ),
+    #n_nodes=400,
+    "links": UserSettableParameter(
+        "slider",
+        "Number of links of each agent",
+        5,
+        10,
+        100,
+        1,
+        description="Choose how many links to include in the model",
+    )
+
+
+}
 
 
 server = ModularServer(
-    EpsteinCivilViolence, [network, chart], "Epstein Civil Violence", model_params
+    EpsteinCivilViolence, [network, chart, chart2], "Epstein Civil Violence", model_params
 )
 server.port = 8523
 

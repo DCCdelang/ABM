@@ -55,7 +55,7 @@ class EpsteinCivilViolence(Model):
         arrest_prob_constant=2.3,
         movement=True,
         max_iters=500,
-        max_fighting_time=3,  # NEW variable
+        max_fighting_time=1,  # NEW variable
         smart_cops=False,
     ):
         super().__init__()
