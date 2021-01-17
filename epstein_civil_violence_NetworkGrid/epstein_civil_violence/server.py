@@ -35,7 +35,7 @@ def network_portrayal(G):
         else:
             color = "#800080"
 
-        print(agent)
+       
         return color
 
 
@@ -45,7 +45,7 @@ def network_portrayal(G):
             "id": node_id,
             "size": 3 if agents else 1,
             "color": node_color(agents),
-        
+        S
         }
         for (node_id, agents) in G.nodes.data("agent")
     ]
