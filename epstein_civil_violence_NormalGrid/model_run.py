@@ -6,8 +6,8 @@ from epstein_civil_violence.agent import Citizen, Cop
 from epstein_civil_violence.model import EpsteinCivilViolence
 
 import time
-legitimacy_kind = "Local" # choose between "Fixed","Global","Local"
-smart_cops = False
+legitimacy_kind = "Fixed" # choose between "Fixed","Global","Local"
+smart_cops = True
 cop_density = .04
 
 start = time.time()
@@ -38,7 +38,7 @@ ax.set_xlabel('Step')
 ax.set_ylabel('Number of Citizens')
 _ = ax.legend(bbox_to_anchor=(1.35, 1.025))
 plt.tight_layout()
-plt.savefig("figures_normalgrid/plot_"+legitimacy_kind+"_"+str(cop_density)+"_"+str(smart_cops)+".png")
+# plt.savefig("figures_normalgrid/plot_"+legitimacy_kind+"_"+str(cop_density)+"_"+str(smart_cops)+".png")
 plt.show()
 if legitimacy_kind != "Local":
     ax = model_out[["Legitimacy"]].plot()
@@ -47,7 +47,7 @@ if legitimacy_kind != "Local":
     ax.set_ylabel('Number of Citizens')
     _ = ax.legend(bbox_to_anchor=(1.35, 1.025))
     plt.tight_layout()
-    plt.savefig("figures_normalgrid/legit_"+legitimacy_kind+"_"+str(cop_density)+"_"+str(smart_cops)+".png")
+    # plt.savefig("figures_normalgrid/legit_"+legitimacy_kind+"_"+str(cop_density)+"_"+str(smart_cops)+".png")
     plt.show()
 
 agent_out = model.datacollector.get_agent_vars_dataframe()
@@ -64,7 +64,7 @@ if legitimacy_kind == "Local":
     ax.set_xlabel('Step')
     ax.set_ylabel('Number of Citizens')
     _ = ax.legend(bbox_to_anchor=(1.35, 1.025))
-    plt.savefig("figures_normalgrid/legit_"+legitimacy_kind+"_"+str(cop_density)+"_"+str(smart_cops)+".png")
+    # plt.savefig("figures_normalgrid/legit_"+legitimacy_kind+"_"+str(cop_density)+"_"+str(smart_cops)+".png")
     plt.tight_layout()
     plt.show()
 
