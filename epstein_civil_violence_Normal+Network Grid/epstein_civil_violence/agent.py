@@ -1,6 +1,7 @@
 import math
 
 import numpy as np
+import networkx as nx
 from mesa import Agent
 
 
@@ -90,8 +91,30 @@ class Citizen(Agent):
                 self.condition = "Quiescent"
             return  # no other changes or movements if agent is in jail.
 
+        # get physical neighbors
+
         self.update_neighbors()
         self.update_estimated_arrest_probability()
+        
+        # get network neighbors
+        
+        self.network_neighbors = list(nx.all_neighbors(self.model.G, self.unique_id))
+        
+        # go throught the list of agents and calculate the number of fighting agents
+
+        actives = 0
+        itteration = 0
+        N_network_neighbors = len(self.network_neighbors)
+        
+        # count the number of active agents
+        
+        for citizen in self.model.schedule.agents:
+            if citizen.unique_id == self.network_neighbors[itteration]:
+                itteration += 1
+                if citizen.condition == "Active":
+                    actives += 1
+            if itteration > N_network_neighbors - 1:
+                break
 
         if self.model.legitimacy_kind == "Fixed":
             self.regime_legitimacy
@@ -104,8 +127,12 @@ class Citizen(Agent):
 
         net_risk = self.risk_aversion * self.arrest_probability
         if (
-            self.condition == "Quiescent"
-            and (self.grievance - net_risk) > self.threshold
+            # change when agent turns active
+            (self.condition == "Quiescent"
+            and (self.grievance - net_risk) > self.threshold)
+            or (self.condition == "Quiescent"
+            and actives/N_network_neighbors > 0.5)
+            
         ):
             self.condition = "Active"
         elif (
