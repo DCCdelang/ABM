@@ -134,6 +134,7 @@ class EpsteinCivilViolence(Model):
         # relabel nodes, so only citizens are on it
         
         node_list = list(self.G.nodes)
+        random.shuffle(self.citizen_ids)
         mapping = dict(zip(node_list, self.citizen_ids))
         self.G = nx.relabel_nodes(self.G, mapping)
 
