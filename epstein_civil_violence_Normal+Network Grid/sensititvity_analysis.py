@@ -15,14 +15,14 @@ from epstein_civil_violence.model import EpsteinCivilViolence
 problem = {
     'num_vars': 4,
     'names': ['links', 'citizen_vision', 'cop_vision', 'max_jail_term'],
-    'bounds': [[1, 10], [1, 20], [1, 20], [1, 50]]
+    'bounds': [[1, 10], [1, 10], [1, 10], [1, 50]]
 }
 
 #%%
 # Set the repetitions, the amount of steps, and the amount of distinct values per variable
 replicates = 2 # Will be 5
-max_steps = 20 # Will be 500 (?)
-distinct_samples = 3 # Will be 100
+max_steps = 10 # Will be 500 (?)
+distinct_samples = 2 # Will be 100
 
 param_values = saltelli.sample(problem, distinct_samples, calc_second_order=False)
 
@@ -33,6 +33,7 @@ model_reporters = {
             "Fighting": lambda m: m.count_fighting(m),
             "Peaks": lambda m: m.count_peaks(m),
             "Legitimacy": lambda m: m.legitimacy_feedback,
+            "DataCollector": lambda m: m.datacollector.get_model_vars_dataframe(),
         }
 
 batch = BatchRunner(EpsteinCivilViolence,
@@ -43,11 +44,13 @@ batch = BatchRunner(EpsteinCivilViolence,
 count = 0
 data = pd.DataFrame(index=range(replicates*len(param_values)), 
                                 columns=['links', 'citizen_vision', 'cop_vision', 'max_jail_term'])
-data['Run'], data['Quiescent'], data['Active'], data['Jailed'], data['Fighting'], data['Legitimacy'],  data['Peaks'] = None, None, None, None, None, None, None
 
-start = time.time()
+data['Run'], data['Quiescent'], data['Active'], data['Jailed'], data['Fighting'], data['Legitimacy'],  data['Peaks']= None, None, None, None, None, None, None
+
+total_start = time.time()
 for i in range(replicates):
     for vals in param_values:
+        start = time.time()
         # Change parameters that should be integers
         vals = list(vals)
         vals[0] = int(vals[0])
@@ -61,20 +64,28 @@ for i in range(replicates):
         print(variable_parameters)
         batch.run_iteration(variable_parameters, tuple(vals), count)
         iteration_data = batch.get_model_vars_dataframe().iloc[count]
+        
         iteration_data['Run'] = count # Don't know what causes this, but iteration number is not correctly filled
         data.iloc[count, 0:4] = vals
         data.iloc[count, 4:11] = iteration_data
+        title = str(count)
+        for value in vals:
+            title = title + "_" + str(value)
+        # print(iteration_data[2]) # Apparently the second row is the dataframe
+        iteration_data[2].to_csv("SA_data/" + title + "-" + str(i)+"_iteration.csv")
+        # data['DataCollector'] = None
         count += 1
         end = time.time() - start
         print("One run", end)
-
         print(f'{count / (len(param_values) * (replicates)) * 100:.2f}% done')
 
+total_end = time.time() - total_start
+print("Total time",total_end)
 # print(param_values)
 print(len(param_values))
 print(data)
 
-data.to_csv("SA_data.csv")
+data.to_csv("SA_data/SA_data.csv")
 
 #%%
 data_from_csv = pd.read_csv("SA_data.csv")
