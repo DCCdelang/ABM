@@ -1,6 +1,8 @@
 #%%
 import matplotlib.pyplot as plt
 import importlib
+import pandas as pd
+from scipy.signal import find_peaks
 
 from epstein_civil_violence.agent import Citizen, Cop
 from epstein_civil_violence.model import EpsteinCivilViolence
@@ -19,7 +21,7 @@ model = EpsteinCivilViolence(height=40,
                            cop_vision=7, 
                            legitimacy=.82, 
                            max_jail_term=30, 
-                           max_iters=500, # cap the number of steps the model takes
+                           max_iters=20, # cap the number of steps the model takes
                            smart_cops = smart_cops,
                            legitimacy_kind = legitimacy_kind, # choose between "Fixed","Global","Local"
                            max_fighting_time=1
@@ -30,7 +32,52 @@ finish = time.time()
 print("Time =",finish-start)
 
 model_out = model.datacollector.get_model_vars_dataframe()
-# model_out.head(5)
+agent_out = model.datacollector.get_agent_vars_dataframe()
+
+model_out.to_csv("CSV_temp/model_temp.csv")
+agent_out.to_csv("CSV_temp/agent_temp.csv")
+
+#%%
+model_out = pd.read_csv("CSV_temp/model_temp.csv")
+
+print(model_out["Active"].mean())
+print(model_out["Active"].std())
+print(model_out["Active"].max())
+
+peaks, _ = find_peaks(model_out["Active"], height=50)
+print("Indices of peaks:", peaks, "Amount:", len(peaks))
+
+actives_list = model_out["Active"].to_list()
+
+time_between = []
+time = 0
+total_active = 0
+
+count1, count2 = False, False
+for i in range(1,len(actives_list)-1):
+    if actives_list[i] < 50 and actives_list[i+1] >= 50:
+        count1 = False
+        time_between.append(time-1)
+        time = 0
+    if actives_list[i] >= 50 and actives_list[i+1] < 50:
+        count1 = True
+    if count1 == True:
+        time += 1
+    # if actives_list[i] < 50 and actives_list[i+1] >= 50:
+    #     count2 = True
+    # if count2 == True:
+    #     total_active += actives_list[i+1]
+
+    # if actives_list[i] >= 50 and actives_list[i+1] < 50:
+    #     count1 = False
+    #     time_between.append(time-1)
+    #     time = 0
+print("Times of inter-outerbursts", time_between)
+
+
+# %%
+
+#%%
 
 ax = model_out[["Quiescent","Active", "Jailed", "Fighting"]].plot()
 ax.set_title('Citizen Condition Over Time')
@@ -50,10 +97,7 @@ if legitimacy_kind != "Local":
     # plt.savefig("figures_normalgrid/legit_"+legitimacy_kind+"_"+str(cop_density)+"_"+str(smart_cops)+".png")
     plt.show()
 
-agent_out = model.datacollector.get_agent_vars_dataframe()
-#%%
-agent_out.head(5)
-# like_list = ['1244','1243']
+
 print(agent_out[["breed","Legitimacy"]].filter(like='1040', axis = 0 ).head())
 print(agent_out[["breed","Legitimacy"]].filter(like='1041', axis = 0 ).head())
 print(agent_out[["breed","Legitimacy"]].filter(like='1042', axis = 0 ).head())
@@ -69,6 +113,4 @@ if legitimacy_kind == "Local":
     plt.show()
 
 # single_agent_out = agent_out[single_agent]
-
 # single_agent_out.head()
-# %%
