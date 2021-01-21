@@ -4,6 +4,7 @@ from mesa.space import Grid
 from mesa.datacollection import DataCollector
 import networkx as nx
 import random
+from scipy.signal import find_peaks
 
 from .agent import Cop, Citizen
 
@@ -153,7 +154,8 @@ class EpsteinCivilViolence(Model):
         self.iteration += 1
         if self.iteration > self.max_iters:
             self.running = False
-        print("step", self.iteration)
+        if self.iteration % 10 == 0:
+            print("step", self.iteration)
 
     @staticmethod
     def update_legitimacy_feedback(model):
@@ -212,3 +214,10 @@ class EpsteinCivilViolence(Model):
             if agent.breed == "citizen" and agent.fighting_time_cit:
                 count += 1
         return count
+
+    @staticmethod
+    def count_peaks(model):
+        model_out = model.datacollector.get_model_vars_dataframe()
+        peaks, _ = find_peaks(model_out["Active"], height=50)
+        # print("Indices of peaks:", peaks, "Amount:", len(peaks))
+        return len(peaks)
