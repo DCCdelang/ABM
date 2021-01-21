@@ -1,21 +1,22 @@
 #%%
 import matplotlib.pyplot as plt
 import importlib
+import numpy as np
 import pandas as pd
 from scipy.signal import find_peaks
 
-from epstein_civil_violence.agent import Citizen, Cop
 from epstein_civil_violence.model import EpsteinCivilViolence
+from epstein_civil_violence.agent import Citizen, Cop
 
 import time
-#%%
-legitimacy_kind = "Fixed" # choose between "Fixed","Global","Local"
-smart_cops = True
+leg = legitimacy_kind = "Local" # choose between "Fixed","Global","Local"
+smart_cops = False
 cop_density = .04
 
 start = time.time()
 model = EpsteinCivilViolence(height=40, 
-                           width=40, 
+                           width=40,
+                           links = 5,
                            citizen_density=.7, 
                            cop_density=cop_density, 
                            citizen_vision=7, 
@@ -34,60 +35,19 @@ print("Time =",finish-start)
 
 model_out = model.datacollector.get_model_vars_dataframe()
 agent_out = model.datacollector.get_agent_vars_dataframe()
+# model_out.head(5)
+model_out.to_csv(f"CSV_temp/model_temp_{leg}.csv")
+agent_out.to_csv(f"CSV_temp/agent_temp_{leg}.csv")
 
-model_out.to_csv("CSV_temp/model_temp.csv")
-agent_out.to_csv("CSV_temp/agent_temp.csv")
-
-#%%
-model_out = pd.read_csv("CSV_temp/model_temp.csv")
-
-print(model_out["Active"].mean())
-print(model_out["Active"].std())
-print(model_out["Active"].max())
-
-peaks, _ = find_peaks(model_out["Active"], height=50)
-print("Indices of peaks:", peaks, "Amount:", len(peaks))
-
-actives_list = model_out["Active"].to_list()
-
-time_between = []
-time = 0
-total_active = 0
-
-count1, count2 = False, False
-for i in range(1,len(actives_list)-1):
-    if actives_list[i] < 50 and actives_list[i+1] >= 50:
-        count1 = False
-        time_between.append(time-1)
-        time = 0
-    if actives_list[i] >= 50 and actives_list[i+1] < 50:
-        count1 = True
-    if count1 == True:
-        time += 1
-    # if actives_list[i] < 50 and actives_list[i+1] >= 50:
-    #     count2 = True
-    # if count2 == True:
-    #     total_active += actives_list[i+1]
-
-    # if actives_list[i] >= 50 and actives_list[i+1] < 50:
-    #     count1 = False
-    #     time_between.append(time-1)
-    #     time = 0
-print("Times of inter-outerbursts", time_between)
-
-
-# %%
-
-#%%
-# model_out = pd.read_csv("C:/Users/djdcc/Documents/School/UNI/Computational Science/Agent Based Modelling/ABM/epstein_civil_violence_Normal+Network Grid/SA_data/0_2_1_5_34-0_iteration.csv")
 ax = model_out[["Quiescent","Active", "Jailed", "Fighting"]].plot()
-ax.set_title('Citizen Condition Over Time')
+ax.set_title(f'Citizen Condition Over Time - {leg}')
 ax.set_xlabel('Step')
 ax.set_ylabel('Number of Citizens')
 _ = ax.legend(bbox_to_anchor=(1.35, 1.025))
 plt.tight_layout()
-# plt.savefig("figures_normalgrid/plot_"+legitimacy_kind+"_"+str(cop_density)+"_"+str(smart_cops)+".png")
+plt.savefig(f"figures_normalnet/plot_{leg}_.png")
 plt.show()
+
 if legitimacy_kind != "Local":
     ax = model_out[["Legitimacy"]].plot()
     ax.set_title('Citizen Condition Over Time')
@@ -95,10 +55,13 @@ if legitimacy_kind != "Local":
     ax.set_ylabel('Number of Citizens')
     _ = ax.legend(bbox_to_anchor=(1.35, 1.025))
     plt.tight_layout()
-    # plt.savefig("figures_normalgrid/legit_"+legitimacy_kind+"_"+str(cop_density)+"_"+str(smart_cops)+".png")
+    plt.savefig("figures_normalgrid/legit_"+legitimacy_kind+"_"+str(cop_density)+"_"+str(smart_cops)+".png")
     plt.show()
 
-
+agent_out = model.datacollector.get_agent_vars_dataframe()
+#%%
+agent_out.head(5)
+# like_list = ['1244','1243']
 print(agent_out[["breed","Legitimacy"]].filter(like='1040', axis = 0 ).head())
 print(agent_out[["breed","Legitimacy"]].filter(like='1041', axis = 0 ).head())
 print(agent_out[["breed","Legitimacy"]].filter(like='1042', axis = 0 ).head())
@@ -109,11 +72,6 @@ if legitimacy_kind == "Local":
     ax.set_xlabel('Step')
     ax.set_ylabel('Number of Citizens')
     _ = ax.legend(bbox_to_anchor=(1.35, 1.025))
-    # plt.savefig("figures_normalgrid/legit_"+legitimacy_kind+"_"+str(cop_density)+"_"+str(smart_cops)+".png")
+    plt.savefig("figures_normalgrid/legit_"+legitimacy_kind+"_"+str(cop_density)+"_"+str(smart_cops)+".png")
     plt.tight_layout()
     plt.show()
-
-# single_agent_out = agent_out[single_agent]
-# single_agent_out.head()
-
-# %%

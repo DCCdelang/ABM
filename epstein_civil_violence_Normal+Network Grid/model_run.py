@@ -5,21 +5,21 @@ from epstein_civil_violence.model import EpsteinCivilViolence
 from epstein_civil_violence.agent import Citizen, Cop
 
 import time
-legitimacy_kind = "Local" # choose between "Fixed","Global","Local"
+legitimacy_kind = "Global" # choose between "Fixed","Global","Local"
 smart_cops = False
 cop_density = .04
 
 start = time.time()
 model = EpsteinCivilViolence(height=40, 
                            width=40,
-                           links = 5,
+                           links = 10,
                            citizen_density=.7, 
                            cop_density=cop_density, 
                            citizen_vision=7, 
                            cop_vision=7, 
                            legitimacy=.82, 
                            max_jail_term=30, 
-                           max_iters=500, # cap the number of steps the model takes
+                           max_iters=100, # cap the number of steps the model takes
                            smart_cops = smart_cops,
                            legitimacy_kind = legitimacy_kind, # choose between "Fixed","Global","Local"
                            max_fighting_time=1

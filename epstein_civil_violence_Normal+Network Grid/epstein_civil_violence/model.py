@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from .agent import Cop, Citizen
 
 import math
+import numpy as np
 
 class EpsteinCivilViolence(Model):
     """
@@ -131,9 +132,9 @@ class EpsteinCivilViolence(Model):
                 
         # initialise a network
         
-        # self.G = nx.barabasi_albert_graph(self.N_agents, links)
+        self.G = nx.barabasi_albert_graph(self.N_agents, links)
         # self.G = nx.watts_strogatz_graph(self.N_agents, links, 6)
-        self.G = nx
+        # self.G = nx
         # relabel nodes, so only citizens are on it
 
         node_list = list(self.G.nodes)
@@ -144,16 +145,7 @@ class EpsteinCivilViolence(Model):
         self.running = True
         self.datacollector.collect(self)
         
-   
-        new_map = {}
-        edges = []
-        for g in self.G.nodes:
-            edges.append(len(self.G.edges(g))*1)
-
-        options = {'node_color': 'green', 'node_size': edges, 'width': 0.2, "font_size": 6, 'font_color': "red"}
-        nx.draw(self.G, with_labels=False, font_weight='bold', **options)
-        plt.show()
-        raise ValueError()
+        self.draw_network(self.G)
 
     def step(self):
         """
@@ -169,6 +161,17 @@ class EpsteinCivilViolence(Model):
             self.running = False
         if self.iteration % 10 == 0:
             print("step", self.iteration)
+
+    def draw_network(self, network):
+        edges = []
+        for g in self.G.nodes:
+            edges.append(len(network.edges(g))*1)
+
+        options = {'node_color': 'green', 'node_size': edges, 'width': 0.2, "font_size": 6, 'font_color': "red"}
+        nx.draw(network, with_labels=False, font_weight='bold', **options)
+        plt.show()
+        return 1
+
 
     @staticmethod
     def update_legitimacy_feedback(model):
@@ -228,12 +231,66 @@ class EpsteinCivilViolence(Model):
                 count += 1
         return count
 
+
+    """
+    Extra Static methods needed for the batchruns in order to get more insight
+    for the sensitivity analysis output
+    """
     @staticmethod
     def count_peaks(model):
         model_out = model.datacollector.get_model_vars_dataframe()
-        peaks, _ = find_peaks(model_out["Active"], height=50)
+        peaks, _ = find_peaks(model_out["Active"], height=50, distance = 5)
         # print("Indices of peaks:", peaks, "Amount:", len(peaks))
         return len(peaks)
-
-
     
+    @staticmethod
+    def mean_peak_size(model):
+        model_out = model.datacollector.get_model_vars_dataframe()
+        peaks, _ = find_peaks(model_out["Active"], height=50, distance = 5)
+        actives_list = model_out["Active"].to_list()
+        peak_sizes = []
+        for peak in peaks:
+            peak_sizes.append(actives_list[peak])
+        return np.mean(peak_sizes)
+    
+    @staticmethod
+    def std_peak_size(model):
+        model_out = model.datacollector.get_model_vars_dataframe()
+        peaks, _ = find_peaks(model_out["Active"], height=50, distance = 5)
+        actives_list = model_out["Active"].to_list()
+        peak_sizes = []
+        for peak in peaks:
+            peak_sizes.append(actives_list[peak])
+        return np.std(peak_sizes)
+
+    @staticmethod
+    def mean_peak_interval(model):
+        model_out = model.datacollector.get_model_vars_dataframe()
+        peaks, _ = find_peaks(model_out["Active"], height=50, distance = 5)
+        peak_intervals = []
+        if len(peaks)>1:
+            for i in range(len(peaks)-1):
+                peak_intervals.append(peaks[i+1] - peaks[i])
+        return np.mean(peak_intervals)
+
+    @staticmethod
+    def std_peak_interval(model):
+        model_out = model.datacollector.get_model_vars_dataframe()
+        peaks, _ = find_peaks(model_out["Active"], height=50, distance = 5)
+        peak_intervals = []
+        if len(peaks)>1:
+            for i in range(len(peaks)-1):
+                peak_intervals.append(peaks[i+1] - peaks[i])
+        return np.std(peak_intervals)
+
+    @staticmethod
+    def perc_time_rebel(model):
+        model_out = model.datacollector.get_model_vars_dataframe()
+        actives_list = model_out["Active"].to_list()
+        return sum(actives > 50 for actives in actives_list)/len(actives_list)
+
+    @staticmethod
+    def perc_time_calm(model):
+        model_out = model.datacollector.get_model_vars_dataframe()
+        actives_list = model_out["Active"].to_list()
+        return sum(actives == 0 for actives in actives_list)/len(actives_list)
