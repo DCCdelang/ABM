@@ -9,6 +9,7 @@ from scipy.signal import find_peaks
 from .agent import Cop, Citizen
 
 import math
+import numpy as np
 
 class EpsteinCivilViolence(Model):
     """
@@ -215,9 +216,66 @@ class EpsteinCivilViolence(Model):
                 count += 1
         return count
 
+
+    """
+    Extra Static methods needed for the batchruns in order to get more insight
+    for the sensitivity analysis output
+    """
     @staticmethod
     def count_peaks(model):
         model_out = model.datacollector.get_model_vars_dataframe()
-        peaks, _ = find_peaks(model_out["Active"], height=50)
+        peaks, _ = find_peaks(model_out["Active"], height=50, distance = 5)
         # print("Indices of peaks:", peaks, "Amount:", len(peaks))
         return len(peaks)
+    
+    @staticmethod
+    def mean_peak_size(model):
+        model_out = model.datacollector.get_model_vars_dataframe()
+        peaks, _ = find_peaks(model_out["Active"], height=50, distance = 5)
+        actives_list = model_out["Active"].to_list()
+        peak_sizes = []
+        for peak in peaks:
+            peak_sizes.append(actives_list[peak])
+        return np.mean(peak_sizes)
+    
+    @staticmethod
+    def std_peak_size(model):
+        model_out = model.datacollector.get_model_vars_dataframe()
+        peaks, _ = find_peaks(model_out["Active"], height=50, distance = 5)
+        actives_list = model_out["Active"].to_list()
+        peak_sizes = []
+        for peak in peaks:
+            peak_sizes.append(actives_list[peak])
+        return np.std(peak_sizes)
+
+    @staticmethod
+    def mean_peak_interval(model):
+        model_out = model.datacollector.get_model_vars_dataframe()
+        peaks, _ = find_peaks(model_out["Active"], height=50, distance = 5)
+        peak_intervals = []
+        if len(peaks)>1:
+            for i in range(len(peaks)-1):
+                peak_intervals.append(peaks[i+1] - peaks[i])
+        return np.mean(peak_intervals)
+
+    @staticmethod
+    def std_peak_interval(model):
+        model_out = model.datacollector.get_model_vars_dataframe()
+        peaks, _ = find_peaks(model_out["Active"], height=50, distance = 5)
+        peak_intervals = []
+        if len(peaks)>1:
+            for i in range(len(peaks)-1):
+                peak_intervals.append(peaks[i+1] - peaks[i])
+        return np.std(peak_intervals)
+
+    @staticmethod
+    def perc_time_rebel(model):
+        model_out = model.datacollector.get_model_vars_dataframe()
+        actives_list = model_out["Active"].to_list()
+        return sum(actives > 50 for actives in actives_list)/len(actives_list)
+
+    @staticmethod
+    def perc_time_calm(model):
+        model_out = model.datacollector.get_model_vars_dataframe()
+        actives_list = model_out["Active"].to_list()
+        return sum(actives == 0 for actives in actives_list)/len(actives_list)

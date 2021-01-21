@@ -8,6 +8,7 @@ from epstein_civil_violence.agent import Citizen, Cop
 from epstein_civil_violence.model import EpsteinCivilViolence
 
 import time
+#%%
 legitimacy_kind = "Fixed" # choose between "Fixed","Global","Local"
 smart_cops = True
 cop_density = .04
@@ -78,7 +79,7 @@ print("Times of inter-outerbursts", time_between)
 # %%
 
 #%%
-
+# model_out = pd.read_csv("C:/Users/djdcc/Documents/School/UNI/Computational Science/Agent Based Modelling/ABM/epstein_civil_violence_Normal+Network Grid/SA_data/0_2_1_5_34-0_iteration.csv")
 ax = model_out[["Quiescent","Active", "Jailed", "Fighting"]].plot()
 ax.set_title('Citizen Condition Over Time')
 ax.set_xlabel('Step')
@@ -114,3 +115,5 @@ if legitimacy_kind == "Local":
 
 # single_agent_out = agent_out[single_agent]
 # single_agent_out.head()
+
+# %%

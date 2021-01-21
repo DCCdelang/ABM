@@ -8,29 +8,37 @@ import numpy as np
 import matplotlib.pyplot as plt
 from itertools import combinations
 import time
-
+#%%
 from epstein_civil_violence.agent import Citizen, Cop
 from epstein_civil_violence.model import EpsteinCivilViolence
 
 problem = {
     'num_vars': 4,
     'names': ['links', 'citizen_vision', 'cop_vision', 'max_jail_term'],
-    'bounds': [[1, 10], [1, 10], [1, 10], [1, 50]]
+    'bounds': [[1, 7], [1, 10], [1, 10], [1, 50]]
 }
 
-#%%
 # Set the repetitions, the amount of steps, and the amount of distinct values per variable
 replicates = 2 # Will be 5
-max_steps = 10 # Will be 500 (?)
-distinct_samples = 2 # Will be 100
+max_steps = 100 # Will be 500 (?)
+distinct_samples = 5 # Will be 100
 
 param_values = saltelli.sample(problem, distinct_samples, calc_second_order=False)
+# print(len(param_values))
 
+param_Cat = param_values[0:10]
+param_Dante = param_values[10:20]
+param_Kamiel = param_values[20:]
+# print(len(param_Cat),len(param_Dante),len(param_Kamiel))
+
+#%%
 model_reporters = {
-            "Quiescent": lambda m: m.count_type_citizens(m, "Quiescent"),
-            "Active": lambda m: m.count_type_citizens(m, "Active"),
-            "Jailed": lambda m: m.count_jailed(m),
-            "Fighting": lambda m: m.count_fighting(m),
+            "mean_peak_size": lambda m: m.mean_peak_size(m),
+            "std_peak_size": lambda m: m.std_peak_size(m),
+            "mean_peak_interval": lambda m: m.mean_peak_interval(m),
+            "std_peak_interval": lambda m: m.std_peak_interval(m),
+            "perc_time_rebel": lambda m: m.perc_time_rebel(m),
+            "perc_time_calm": lambda m: m.perc_time_calm(m),
             "Peaks": lambda m: m.count_peaks(m),
             "Legitimacy": lambda m: m.legitimacy_feedback,
             "DataCollector": lambda m: m.datacollector.get_model_vars_dataframe(),
@@ -45,7 +53,10 @@ count = 0
 data = pd.DataFrame(index=range(replicates*len(param_values)), 
                                 columns=['links', 'citizen_vision', 'cop_vision', 'max_jail_term'])
 
-data['Run'], data['Quiescent'], data['Active'], data['Jailed'], data['Fighting'], data['Legitimacy'],  data['Peaks']= None, None, None, None, None, None, None
+data['Run'], data['mean_peak_size'], data['std_peak_size'], data['mean_peak_interval'], data['std_peak_interval'], data['perc_time_rebel'],  data['perc_time_calm'], data['Legitimacy'],  data['Peaks']= None, None, None, None, None, None, None, None, None
+
+"""Choose your param set"""
+param_values = param_Dante
 
 total_start = time.time()
 for i in range(replicates):
@@ -67,28 +78,27 @@ for i in range(replicates):
         
         iteration_data['Run'] = count # Don't know what causes this, but iteration number is not correctly filled
         data.iloc[count, 0:4] = vals
-        data.iloc[count, 4:11] = iteration_data
+        data.iloc[count, 4:13] = iteration_data
         title = str(count)
         for value in vals:
             title = title + "_" + str(value)
-        # print(iteration_data[2]) # Apparently the second row is the dataframe
-        iteration_data[2].to_csv("SA_data/" + title + "-" + str(i)+"_iteration.csv")
+
+        # print(iteration_data) # Apparently the second row is the dataframe
+        iteration_data[1].to_csv("SA_data/" + title + "-" + str(i)+"_iteration.csv")
         # data['DataCollector'] = None
         count += 1
         end = time.time() - start
-        print("One run", end)
-        print(f'{count / (len(param_values) * (replicates)) * 100:.2f}% done')
+        print("Time one run", end)
+        print(f'{count / (len(param_values) * (replicates)) * 100:.2f}% done\n')
 
 total_end = time.time() - total_start
 print("Total time",total_end)
 # print(param_values)
-print(len(param_values))
 print(data)
-
 data.to_csv("SA_data/SA_data.csv")
 
 #%%
-data_from_csv = pd.read_csv("SA_data.csv")
+data_from_csv = pd.read_csv("SA_data/SA_data.csv")
 
 Si_active = sobol.analyze(problem, data_from_csv['Active'].values, print_to_console=True, calc_second_order=False)
 Si_legitimacy = sobol.analyze(problem, data_from_csv['Legitimacy'].values, print_to_console=True, calc_second_order=False)
