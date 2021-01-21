@@ -107,13 +107,15 @@ class Citizen(Agent):
         
         # count the number of active agents
         
-        for citizen in self.model.schedule.agents:
-            for network_neighbor_id in self.network_neighbors:
+        
+        for network_neighbor_id in self.network_neighbors:
+            for citizen in self.model.schedule.agents:
                 if citizen.unique_id == network_neighbor_id:
                     if citizen.condition == "Active":
                         actives += 1
                     break
-        #print(f"Active: {actives/N_network_neighbors*100} %")
+                
+        #print(f"2 Active: {actives/N_network_neighbors*100} %")
 
         if self.model.legitimacy_kind == "Fixed":
             self.regime_legitimacy
