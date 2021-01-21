@@ -145,7 +145,7 @@ class EpsteinCivilViolence(Model):
         self.running = True
         self.datacollector.collect(self)
         
-        self.draw_network(self.G)
+        # self.draw_network(self.G)
 
     def step(self):
         """

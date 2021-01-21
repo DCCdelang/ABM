@@ -29,11 +29,12 @@ param_values = saltelli.sample(problem, distinct_samples, calc_second_order=Fals
 param_Cat = param_values[0:10]
 param_Dante = param_values[10:20]
 param_Kamiel = param_values[20:]
+print(len(param_Cat), len(param_Dante), len(param_Kamiel))
 # print(len(param_Cat),len(param_Dante),len(param_Kamiel))
 
 """Choose your param set and set file name <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"""
-param_values = param_Dante
-data_file_name = "SA_data/SA_data_NAME.csv"
+param_values = param_Kamiel
+data_file_name = "SA_data/SA_data_Kamiel.csv"
 
 #%%
 model_reporters = {
@@ -77,9 +78,12 @@ for i in range(replicates):
         batch.run_iteration(variable_parameters, tuple(vals), count)
         iteration_data = batch.get_model_vars_dataframe().iloc[count]
         
+
+        print(data)
+        print(iteration_data)
         iteration_data['Run'] = count # Don't know what causes this, but iteration number is not correctly filled
         data.iloc[count, 0:4] = vals
-        data.iloc[count, 4:13] = iteration_data
+        data.iloc[count, 4:14] = iteration_data
         title = str(count)
         for value in vals:
             title = title + "_" + str(value)
