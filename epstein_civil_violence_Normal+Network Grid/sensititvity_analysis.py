@@ -20,7 +20,7 @@ problem = {
 
 # Set the repetitions, the amount of steps, and the amount of distinct values per variable
 replicates = 2 # Will be 5
-max_steps = 10 # Will be 500 (?)
+max_steps = 100 # Will be 500 (?)
 distinct_samples = 5 # Will be 100
 
 param_values = saltelli.sample(problem, distinct_samples, calc_second_order=False)
