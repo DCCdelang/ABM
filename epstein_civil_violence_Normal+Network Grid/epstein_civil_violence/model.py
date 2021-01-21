@@ -2,6 +2,8 @@ from mesa import Model
 from mesa.time import RandomActivation
 from mesa.space import Grid
 from mesa.datacollection import DataCollector
+import networkx as nx
+import random
 
 from .agent import Cop, Citizen
 
@@ -38,6 +40,7 @@ class EpsteinCivilViolence(Model):
         self,
         height=40,
         width=40,
+        links=5,
         citizen_density=0.7,
         cop_density=0.04,
         citizen_vision=7,
@@ -95,7 +98,10 @@ class EpsteinCivilViolence(Model):
         unique_id = 0
         if self.cop_density + self.citizen_density > 1:
             raise ValueError("Cop density + citizen density must be less than 1")
-
+        
+        # initialise an empty list of citizen ids
+        self.citizen_ids = []
+        
         for (_, x, y) in self.grid.coord_iter():
             if self.random.random() < self.cop_density:
                 cop = Cop(unique_id, self, (x, y), vision=self.cop_vision)
@@ -114,10 +120,23 @@ class EpsteinCivilViolence(Model):
                     vision=self.citizen_vision,
                     legitimacy_feedback=self.legitimacy_feedback, # ADDED parameter
                 )
+                # add citizen id to the list
+                self.citizen_ids.append(unique_id)
                 unique_id += 1
                 self.grid[y][x] = citizen
                 self.schedule.add(citizen)
                 self.N_agents += 1
+                
+        # initialise a network
+        
+        self.G = nx.barabasi_albert_graph(self.N_agents, links)
+        
+        # relabel nodes, so only citizens are on it
+        
+        node_list = list(self.G.nodes)
+        random.shuffle(self.citizen_ids)
+        mapping = dict(zip(node_list, self.citizen_ids))
+        self.G = nx.relabel_nodes(self.G, mapping)
 
         self.running = True
         self.datacollector.collect(self)
