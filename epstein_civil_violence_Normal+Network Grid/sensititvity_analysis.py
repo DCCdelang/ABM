@@ -83,9 +83,9 @@ for i in range(replicates):
         title = str(count)
         for value in vals:
             title = title + "_" + str(value)
-
+        # print(data)
         # print(iteration_data) # Apparently the second row is the dataframe
-        iteration_data[1].to_csv("SA_data/" + title + "-" + str(i)+"_iteration.csv")
+        iteration_data[1].to_csv("epstein_civil_violence_Normal+Network Grid/SA_data/" + title + "-" + str(i)+"_iteration.csv")
         # data['DataCollector'] = None
         count += 1
         end = time.time() - start
@@ -98,6 +98,7 @@ print("Total time",total_end)
 print(data)
 data.to_csv(data_file_name)
 
+exit()
 #%%
 data_from_csv = pd.read_csv("SA_data/SA_data.csv")
 
