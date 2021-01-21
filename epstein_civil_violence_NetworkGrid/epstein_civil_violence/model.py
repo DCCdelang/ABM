@@ -43,8 +43,8 @@ class EpsteinCivilViolence(Model):
 
     def __init__(
         self,
-        n_nodes=100,
-        links=5,
+        n_nodes=1000,
+        links=112,
         citizen_density=0.7,
         cop_density=0.04,
         citizen_vision=7,
@@ -57,6 +57,7 @@ class EpsteinCivilViolence(Model):
         max_iters=500,
         max_fighting_time=1,  # NEW variable
         smart_cops=False,
+        network = "barbasi_albert",
     ):
         super().__init__()
         self.n_nodes = n_nodes
@@ -73,7 +74,12 @@ class EpsteinCivilViolence(Model):
         self.max_iters = max_iters
         self.iteration = 0
         self.schedule = RandomActivation(self)
-        self.G = nx.barabasi_albert_graph(n_nodes, links)
+        if network == "barbasi_albert":
+            self.G = nx.barabasi_albert_graph(n_nodes, links)
+        elif network == "watts_strogatz":
+            self.G = nx.watts_strogatz_graph(n_nodes, links)
+        elif network == "erdos_renyi":
+            self.G = nx.erdos_renyi_graph(n_nodes, links)
         self.grid = NetworkGrid(self.G)
         #self.grid = Grid(height, width, torus=True)
         self.legitimacy_feedback = legitimacy

@@ -1,8 +1,9 @@
+#%%
 import matplotlib.pyplot as plt
 import importlib
 
-from epstein_civil_violence.model import EpsteinCivilViolence
 from epstein_civil_violence.agent import Citizen, Cop
+from epstein_civil_violence.model import EpsteinCivilViolence
 
 import time
 legitimacy_kind = "Local" # choose between "Fixed","Global","Local"
@@ -11,8 +12,7 @@ cop_density = .04
 
 start = time.time()
 model = EpsteinCivilViolence(height=40, 
-                           width=40,
-                           links = 5,
+                           width=40, 
                            citizen_density=.7, 
                            cop_density=cop_density, 
                            citizen_vision=7, 
