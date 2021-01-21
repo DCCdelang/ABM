@@ -104,16 +104,19 @@ class Citizen(Agent):
 
         actives = 0
         N_network_neighbors = len(self.network_neighbors)
+        itterations = 0
         
         # count the number of active agents
         
-        
-        for network_neighbor_id in self.network_neighbors:
-            for citizen in self.model.schedule.agents:
+        for citizen in self.model.schedule.agents:
+            for network_neighbor_id in self.network_neighbors:
                 if citizen.unique_id == network_neighbor_id:
+                    itterations += 1
                     if citizen.condition == "Active":
                         actives += 1
                     break
+            if itterations == N_network_neighbors:
+                break
                 
         #print(f"2 Active: {actives/N_network_neighbors*100} %")
 
