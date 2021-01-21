@@ -31,6 +31,10 @@ param_Dante = param_values[10:20]
 param_Kamiel = param_values[20:]
 # print(len(param_Cat),len(param_Dante),len(param_Kamiel))
 
+"""Choose your param set and set file name <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"""
+param_values = param_Dante
+data_file_name = "SA_data/SA_data_NAME.csv"
+
 #%%
 model_reporters = {
             "mean_peak_size": lambda m: m.mean_peak_size(m),
@@ -54,9 +58,6 @@ data = pd.DataFrame(index=range(replicates*len(param_values)),
                                 columns=['links', 'citizen_vision', 'cop_vision', 'max_jail_term'])
 
 data['Run'], data['mean_peak_size'], data['std_peak_size'], data['mean_peak_interval'], data['std_peak_interval'], data['perc_time_rebel'],  data['perc_time_calm'], data['Legitimacy'],  data['Peaks']= None, None, None, None, None, None, None, None, None
-
-"""Choose your param set"""
-param_values = param_Dante
 
 total_start = time.time()
 for i in range(replicates):
@@ -95,7 +96,7 @@ total_end = time.time() - total_start
 print("Total time",total_end)
 # print(param_values)
 print(data)
-data.to_csv("SA_data/SA_data.csv")
+data.to_csv(data_file_name)
 
 #%%
 data_from_csv = pd.read_csv("SA_data/SA_data.csv")
