@@ -14,8 +14,8 @@ leg = legitimacy_kind = "Fixed"
 smart_cops = False
 cop_density = .04
 
-n_sim = 5
-max_iters = 20
+n_sim = 2
+max_iters = 10
 sim_peak = []
 #for leg in legitimacy_kind:
 for n in range(n_sim):
@@ -56,8 +56,8 @@ for n in range(n_sim):
     #print("Indices of peaks:", peaks, "Amount:", len(peaks))
 
     # save number of peaks
-    sim_peak = sim_peak.append()
-
+    sim_peak = sim_peak.append(len(peaks))
+"""
     actives_list = model_out["Active"].to_list(len(peaks))
 
     time_between = []
@@ -84,7 +84,7 @@ for n in range(n_sim):
         #     time_between.append(time-1)
         #     time = 0
     #print("Times of inter-outerbursts", time_between)
-
+"""
 n_quiescent = []
 n_active = []
 n_jailed = []
