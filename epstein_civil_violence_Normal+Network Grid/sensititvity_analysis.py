@@ -17,24 +17,26 @@ problem = {
     'names': ['links', 'citizen_vision', 'cop_vision', 'max_jail_term'],
     'bounds': [[1, 7], [1, 10], [1, 10], [1, 50]]
 }
-
+#%%
 # Set the repetitions, the amount of steps, and the amount of distinct values per variable
-replicates = 2 # Will be 5
-max_steps = 100 # Will be 500 (?)
-distinct_samples = 5 # Will be 100
+replicates = 5 # Will be 5
+max_steps = 400 # Will be 400 (?)
+distinct_samples = 100 # Will be 100
 
 param_values = saltelli.sample(problem, distinct_samples, calc_second_order=False)
-# print(len(param_values))
+print(len(param_values))
 
-param_Cat = param_values[0:10]
-param_Dante = param_values[10:20]
-param_Kamiel = param_values[20:]
-print(len(param_Cat), len(param_Dante), len(param_Kamiel))
+param_Cat = param_values[0:120]
+param_Dante = param_values[120:240]
+param_Kamiel = param_values[240:360]
+param_Louky = param_values[360:480]
+param_Ignas = param_values[480:]
+# print(param_Dante)
 # print(len(param_Cat),len(param_Dante),len(param_Kamiel))
 
 """Choose your param set and set file name <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"""
-param_values = param_Kamiel
-data_file_name = "SA_data/SA_data_Kamiel.csv"
+# param_values = param_Dante
+data_file_name = "epstein_civil_violence_Normal+Network Grid/SA_data/SA_data_NAME.csv"
 
 #%%
 model_reporters = {
@@ -83,7 +85,7 @@ for i in range(replicates):
         print(iteration_data)
         iteration_data['Run'] = count # Don't know what causes this, but iteration number is not correctly filled
         data.iloc[count, 0:4] = vals
-        data.iloc[count, 4:14] = iteration_data
+        data.iloc[count, 4:] = iteration_data
         title = str(count)
         for value in vals:
             title = title + "_" + str(value)
@@ -104,10 +106,11 @@ data.to_csv(data_file_name)
 
 exit()
 #%%
-data_from_csv = pd.read_csv("SA_data/SA_data.csv")
+data_from_csv = pd.read_csv("SA_data/SA_data_NAME.csv")
 
-Si_active = sobol.analyze(problem, data_from_csv['Active'].values, print_to_console=True, calc_second_order=False)
-Si_legitimacy = sobol.analyze(problem, data_from_csv['Legitimacy'].values, print_to_console=True, calc_second_order=False)
+Si_active = sobol.analyze(problem, data_from_csv['perc_time_rebel'].values, print_to_console=True, calc_second_order=False)
+Si_legitimacy = sobol.analyze(problem, data_from_csv['mean_peak_size'].values, print_to_console=True, calc_second_order=False)
+Si_peaks = sobol.analyze(problem, data_from_csv['Peaks'].values, print_to_console=True, calc_second_order=False)
 Si_peaks = sobol.analyze(problem, data_from_csv['Peaks'].values, print_to_console=True, calc_second_order=False)
 
 def plot_index(s, params, i, title=''):
@@ -147,4 +150,8 @@ for Si in (Si_active, Si_legitimacy, Si_peaks):
     # First order
     plot_index(Si, problem['names'], '1', 'First order sensitivity')
     plt.show()
-# %%
+
+    # Total order
+    plot_index(Si, problem['names'], 'T', 'Total order sensitivity')
+    plt.show()
+
