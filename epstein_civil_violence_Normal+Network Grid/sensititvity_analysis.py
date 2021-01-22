@@ -80,6 +80,9 @@ for i in range(replicates):
         batch.run_iteration(variable_parameters, tuple(vals), count)
         iteration_data = batch.get_model_vars_dataframe().iloc[count]
         
+
+        print(data)
+        print(iteration_data)
         iteration_data['Run'] = count # Don't know what causes this, but iteration number is not correctly filled
         data.iloc[count, 0:4] = vals
         data.iloc[count, 4:] = iteration_data

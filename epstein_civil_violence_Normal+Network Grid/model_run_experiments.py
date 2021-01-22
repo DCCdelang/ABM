@@ -4,18 +4,19 @@ import importlib
 import numpy as np
 import pandas as pd
 from scipy.signal import find_peaks
+import seaborn as sns
 
 from epstein_civil_violence.agent import Citizen, Cop
 from epstein_civil_violence.model import EpsteinCivilViolence
 
 import time
-#legitimacy_kind = np.array(["Fixed", "Global", "Local"]) # choose between "Fixed","Global","Local"
+legitimacy_kind = np.array(["Fixed", "Global", "Local"]) # choose between "Fixed","Global","Local"
 leg = legitimacy_kind = "Fixed"
 smart_cops = False
 cop_density = .04
 
 n_sim = 5
-max_iters = 20
+max_iters = 100
 sim_peak = []
 #for leg in legitimacy_kind:
 for n in range(n_sim):
@@ -52,12 +53,12 @@ for n in range(n_sim):
     #print(model_out["Active"].std())
     #print(model_out["Active"].max())
 
-    peaks, _ = find_peaks(model_out["Active"], height=50)
+    peaks= find_peaks(model_out["Active"], height=50)
     #print("Indices of peaks:", peaks, "Amount:", len(peaks))
 
     # save number of peaks
-    sim_peak = sim_peak.append()
-
+    sim_peak.append(len(peaks))
+"""
     actives_list = model_out["Active"].to_list(len(peaks))
 
     time_between = []
@@ -84,43 +85,58 @@ for n in range(n_sim):
         #     time_between.append(time-1)
         #     time = 0
     #print("Times of inter-outerbursts", time_between)
-
+"""
 n_quiescent = []
 n_active = []
 n_jailed = []
 n_fighting = []
 
-print(model_out)
-for it in max_iters:
-    for n in range(n_sim):
-        model_out = pd.read_csv(f"CSV_temp/model_temp_{legitimacy_kind}_{n}.csv")
-        n_quiescent = n_quiescent.append(model_out["Quiescent"][it])
-        n_active = n_active.append(model_out["Active"][it])
-        n_jailed = n_jailed.append(model_out["Jailed"][it])
-        n_fighting = n_fighting.append(model_out["Fighting"][it])
+frames = []
 
-    ax = model_out[["Quiescent","Active", "Jailed", "Fighting"]].plot()
-    ax.set_title(f'Citizen Condition Over Time - {n}')
-    ax.set_xlabel('Step')
-    ax.set_ylabel('Number of Citizens')
-    _ = ax.legend(bbox_to_anchor=(1.35, 1.025))
-    plt.tight_layout()
-    plt.savefig(f"figures_normalnet/plot__{legitimacy_kind}_.png")
+for n in range(n_sim):
+    model_out = pd.read_csv(f"CSV_temp/model_temp_{legitimacy_kind}_{n}.csv")
+    print(n)
+    if n > 0:
+        model_out.drop([0])
+    frames.append(model_out)
+
+
+    #     n_quiescent = n_quiescent.append(model_out["Quiescent"][it])
+    #     n_active = n_active.append(model_out["Active"][it])
+    #     n_jailed = n_jailed.append(model_out["Jailed"][it])
+    #     n_fighting = n_fighting.append(model_out["Fighting"][it])
+
+    # ax = model_out[["Quiescent","Active", "Jailed", "Fighting"]].plot()
+    # ax.set_title(f'Citizen Condition Over Time - {n}')
+    # ax.set_xlabel('Step')
+    # ax.set_ylabel('Number of Citizens')
+    # _ = ax.legend(bbox_to_anchor=(1.35, 1.025))
+    # plt.tight_layout()
+    # plt.savefig(f"figures_normalnet/plot__{legitimacy_kind}_.png")
     #plt.show()
 
+result = pd.concat(frames)
+print(result)
+
+
+sns.lineplot(data=result, x="Unnamed: 0", y="Active")
+sns.lineplot(data=result, x="Unnamed: 0", y="Fighting")
+
+
+plt.show()
 
     #print(agent_out[["breed","Legitimacy"]].filter(like='1040', axis = 0 ).head())
     #print(agent_out[["breed","Legitimacy"]].filter(like='1041', axis = 0 ).head())
     #print(agent_out[["breed","Legitimacy"]].filter(like='1042', axis = 0 ).head())
 
 
-    ax = agent_out["Legitimacy"].filter(like='1040', axis = 0 ).plot()
-    ax.set_title(f'Citizen Condition Over Time - {leg}')
-    ax.set_xlabel('Step')
-    ax.set_ylabel('Number of Citizens')
-    _ = ax.legend(bbox_to_anchor=(1.35, 1.025))
-    plt.tight_layout()
-    plt.savefig(f"figures_normalnet/legit_{n}_.png")
+    # ax = agent_out["Legitimacy"].filter(like='1040', axis = 0 ).plot()
+    # ax.set_title(f'Citizen Condition Over Time - {leg}')
+    # ax.set_xlabel('Step')
+    # ax.set_ylabel('Number of Citizens')
+    # _ = ax.legend(bbox_to_anchor=(1.35, 1.025))
+    # plt.tight_layout()
+    # plt.savefig(f"figures_normalnet/legit_{n}_.png")
     #plt.show()
 
     # single_agent_out = agent_out[single_agent]
