@@ -21,7 +21,8 @@ model = EpsteinCivilViolence(n_nodes=1000,
                            max_jail_term=30, 
                            max_iters=500, # cap the number of steps the model takes
                            smart_cops = False,
-                           max_fighting_time = 1) 
+                           max_fighting_time = 1,
+                           network= "barbasi_albert") # Choose the kind of network: barbasi_albert, watts_strogatz, erdos_renyi
 model.run_model()
 
 finish = time.time()
