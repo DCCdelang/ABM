@@ -39,23 +39,16 @@ def citizen_cop_portrayal(agent):
         portrayal["Layer"] = 1
     return portrayal
 
-legitimacy_kind = "Fixed" # choose between "Fixed","Global","Local"
-smart_cops = True
-cop_density = .04
 
 model_params = dict(
-    height=40, 
-    width=40, 
-    citizen_density=.7, 
-    cop_density=cop_density, 
-    citizen_vision=7, 
-    cop_vision=7, 
-    legitimacy=.82, 
-    max_jail_term=30, 
-    max_iters=500, # cap the number of steps the model takes
-    smart_cops = smart_cops,
-    legitimacy_kind = legitimacy_kind, # choose between "Fixed","Global","Local"
-    max_fighting_time=1
+    height=40,
+    width=40,
+    citizen_density=0.7,
+    cop_density=0.04,
+    citizen_vision=7,
+    cop_vision=7,
+    legitimacy=0.82,
+    max_jail_term=30,
 )
 
 canvas_element = CanvasGrid(citizen_cop_portrayal, 40, 40, 480, 480)
