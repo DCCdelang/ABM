@@ -62,8 +62,8 @@ for n in range(n_sim):
     tot_peaks = len(peaks)
     sim_peak.append(tot_peaks)
 
-"""
-    actives_list = model_out["Active"].to_list(tot_peaks)
+
+    actives_list = model_out["Active"].to_list()
 
     time_between = []
     time = 0
@@ -89,7 +89,7 @@ for n in range(n_sim):
         #     time_between.append(time-1)
         #     time = 0
     #print("Times of inter-outerbursts", time_between)
-"""
+
 
 
 sns.boxplot(sim_peak)
