@@ -20,7 +20,7 @@ problem = {
 #%%
 # Set the repetitions, the amount of steps, and the amount of distinct values per variable
 replicates = 5 # Will be 5
-max_steps = 400 # Will be 400 (?)
+max_steps = 10 # Will be 400 (?)
 distinct_samples = 100 # Will be 100
 
 param_values = saltelli.sample(problem, distinct_samples, calc_second_order=False)
@@ -35,8 +35,8 @@ param_Ignas = param_values[480:]
 # print(len(param_Cat),len(param_Dante),len(param_Kamiel))
 
 """Choose your param set and set file name <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"""
-param_values = param_Kamiel
-data_file_name = "epstein_civil_violence_Normal+Network Grid/SA_data_Kamiel/SA_data_Kamiel.csv"
+param_values = param_Dante
+data_file_name = "epstein_civil_violence_Normal+Network Grid/SA_data_Dante/SA_data.csv"
 
 #%%
 model_reporters = {
@@ -80,7 +80,6 @@ for i in range(replicates):
         batch.run_iteration(variable_parameters, tuple(vals), count)
         iteration_data = batch.get_model_vars_dataframe().iloc[count]
         
-
         print(data)
         print(iteration_data)
         iteration_data['Run'] = count # Don't know what causes this, but iteration number is not correctly filled
@@ -91,7 +90,8 @@ for i in range(replicates):
             title = title + "_" + str(value)
         # print(data)
         # print(iteration_data) # Apparently the second row is the dataframe
-        iteration_data[1].to_csv("epstein_civil_violence_Normal+Network Grid/SA_data_Kamiel/" + title + "-" + str(i)+"_iteration.csv")
+        
+        iteration_data[1].to_csv("epstein_civil_violence_Normal+Network Grid/SA_data_Dante/" + title + "-" + str(i)+"_iteration.csv")
         # data['DataCollector'] = None
         count += 1
         end = time.time() - start
@@ -104,10 +104,9 @@ print("Total time",total_end)
 # print(param_values)
 print(data)
 
-
 exit()
 #%%
-data_from_csv = pd.read_csv("SA_data/SA_data_NAME.csv")
+data_from_csv = pd.read_csv("SA_data/SA_data.csv")
 
 Si_active = sobol.analyze(problem, data_from_csv['perc_time_rebel'].values, print_to_console=True, calc_second_order=False)
 Si_legitimacy = sobol.analyze(problem, data_from_csv['mean_peak_size'].values, print_to_console=True, calc_second_order=False)
