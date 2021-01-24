@@ -15,11 +15,9 @@ leg = legitimacy_kind = "Fixed"
 smart_cops = False
 cop_density = .04
 
-n_sim = 2
-max_iters = 20
+n_sim = 6
+max_iters = 100
 sim_peak = []
-model_out = []
-agent_out = []
 #for leg in legitimacy_kind:
 for n in range(n_sim):
     #start = time.time()
@@ -43,14 +41,13 @@ for n in range(n_sim):
 
     model_out = model.datacollector.get_model_vars_dataframe()
     agent_out = model.datacollector.get_agent_vars_dataframe()
-    
-    model_out.to_csv(f"CSV_temp/model_temp_{legitimacy_kind}_{n}.csv")
-    agent_out.to_csv(f"CSV_temp/agent_temp_{legitimacy_kind}_{n}.csv")
+
+    model_out.to_csv(f"model_temp_{legitimacy_kind}_{n}.csv")
+    agent_out.to_csv(f"agent_temp_{legitimacy_kind}_{n}.csv")
 
 
 
-"""
-    model_out = pd.read_csv(f"CSV_temp/model_temp_{legitimacy_kind}_{n}.csv")
+    model_out = pd.read_csv(f"model_temp_{legitimacy_kind}_{n}.csv")
 
     #print(model_out["Active"].mean())
     #print(model_out["Active"].std())
@@ -62,6 +59,8 @@ for n in range(n_sim):
     # save number of peaks
     sim_peak.append(len(peaks))
 
+
+"""
     actives_list = model_out["Active"].to_list(len(peaks))
 
     time_between = []
@@ -89,20 +88,21 @@ for n in range(n_sim):
         #     time = 0
     #print("Times of inter-outerbursts", time_between)
 """
-
-
-
 frames = []
+distribution = []
 
 for n in range(n_sim):
-    model_out = pd.read_csv(f"CSV_temp/model_temp_{legitimacy_kind}_{n}.csv")
+    model_out = pd.read_csv(f"model_temp_{legitimacy_kind}_{n}.csv")
     print(n)
     if n > 0:
         model_out.drop([0])
     frames.append(model_out)
 
-
 result = pd.concat(frames)
+
+y = result["Active"]
+print(y)
+
 print(result)
 
 
@@ -112,3 +112,6 @@ sns.lineplot(data=result, x="Unnamed: 0", y="Quiescent")
 sns.lineplot(data=result, x="Unnamed: 0", y="Jailed")
 
 plt.show()
+
+
+# %%
