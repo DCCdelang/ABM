@@ -20,50 +20,38 @@ from epstein_civil_violence.model import EpsteinCivilViolence
 problem = {
     'num_vars': 1,
     'names': ['links'],
-    'bounds': [1, 10]s
+    'bounds': [1, 7]
 }
 
 # Set the repetitions, the amount of steps, and the amount of distinct values per variable
-replicates = 3
-max_steps = 10
-distinct_samples = 10
-
-# Set the outputs
-model_reporters = {
-            "mean_peak_size": lambda m: m.mean_peak_size(m),
-            "std_peak_size": lambda m: m.std_peak_size(m),
-            "mean_peak_interval": lambda m: m.mean_peak_interval(m),
-            "std_peak_interval": lambda m: m.std_peak_interval(m),
-            "perc_time_rebel": lambda m: m.perc_time_rebel(m),
-            "perc_time_calm": lambda m: m.perc_time_calm(m),
-            "Peaks": lambda m: m.count_peaks(m),
-            "Legitimacy": lambda m: m.legitimacy_feedback,
-            "DataCollector": lambda m: m.datacollector.get_model_vars_dataframe(),
-        }
+replicates = 5
+max_steps = 400
+distinct_samples = 7
 
 
-data = {}
+samples = np.linspace(problem['bounds'][0], problem['bounds'][1], num=distinct_samples)
+samples = [int(x) for x in samples]
 
-for i, var in enumerate(problem['names']):
-    # Get the bounds for this variable and get <distinct_samples> samples within this space (uniform)
-    samples = np.linspace(problem['bounds'][0], problem['bounds'][1], num=distinct_samples)
+
+for sample in samples:
+    for i in range(replicates):
     
-    samples = [int(x) for x in samples]
+        model = EpsteinCivilViolence(links = sample,
+                                     max_iters = max_steps)
+        model.run_model()
     
-    # Keep in mind that wolf_gain_from_food should be integers. You will have to change
-    # your code to acommodate for this or sample in such a way that you only get integers.
+        data = model.datacollector.get_model_vars_dataframe()
+        
+        data["links"] = sample
+        data["run"] = i
+        
+        data.to_csv(f"OFAT - results/OFAT - links({sample}) - run({i}).csv")
+        
+        print(data)
     
-    batch = BatchRunner(EpsteinCivilViolence, 
-                        max_steps=max_steps,
-                        iterations=replicates,
-                        variable_parameters={var: samples},
-                        model_reporters=model_reporters,
-                        display_progress=True)
-    
-    batch.run_all()
-    
-    data[var] = batch.get_model_vars_dataframe()
-    
-batch.get_model_vars_dataframe()
+
+        
+
+
 
     
