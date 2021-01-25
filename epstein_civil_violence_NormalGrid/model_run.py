@@ -52,6 +52,15 @@ peaks, _ = find_peaks(model_out["Active"], height=50)
 print("Indices of peaks:", peaks, "Amount:", len(peaks))
 
 actives_list = model_out["Active"].to_list()
+for peak in peaks:
+    print(peak, actives_list[peak])
+print(actives_list)
+
+peak_intervals = []
+if len(peaks)>1:
+    for i in range(len(peaks)-1):
+        peak_intervals.append(peaks[i+1] - peaks[i])
+print(peak_intervals)
 
 time_between = []
 time = 0
