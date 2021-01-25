@@ -15,11 +15,10 @@ leg = legitimacy_kind = "Fixed"
 smart_cops = False
 cop_density = .04
 
-n_sim = 2
-max_iters = 20
+n_sim = 2 # should be 20
+max_iters = 10 # should be 500
 sim_peak = []
-model_out = []
-agent_out = []
+
 #for leg in legitimacy_kind:
 for n in range(n_sim):
     #start = time.time()
@@ -44,25 +43,27 @@ for n in range(n_sim):
     model_out = model.datacollector.get_model_vars_dataframe()
     agent_out = model.datacollector.get_agent_vars_dataframe()
     
-    model_out.to_csv(f"CSV_temp/model_temp_{legitimacy_kind}_{n}.csv")
-    agent_out.to_csv(f"CSV_temp/agent_temp_{legitimacy_kind}_{n}.csv")
+    model_out.to_csv(f"CSV_temp/model_{legitimacy_kind}_{n}.csv")
+    agent_out.to_csv(f"CSV_temp/agent_{legitimacy_kind}_{n}.csv")
 
 
 
-"""
-    model_out = pd.read_csv(f"CSV_temp/model_temp_{legitimacy_kind}_{n}.csv")
+
+    model_out = pd.read_csv(f"CSV_temp/model_{legitimacy_kind}_{n}.csv")
 
     #print(model_out["Active"].mean())
     #print(model_out["Active"].std())
     #print(model_out["Active"].max())
 
-    peaks= find_peaks(model_out["Active"], height=50)
+    peaks = find_peaks(model_out["Active"], height=50)
     #print("Indices of peaks:", peaks, "Amount:", len(peaks))
 
     # save number of peaks
-    sim_peak.append(len(peaks))
+    tot_peaks = len(peaks)
+    sim_peak.append(tot_peaks)
 
-    actives_list = model_out["Active"].to_list(len(peaks))
+
+    actives_list = model_out["Active"].to_list()
 
     time_between = []
     time = 0
@@ -88,14 +89,16 @@ for n in range(n_sim):
         #     time_between.append(time-1)
         #     time = 0
     #print("Times of inter-outerbursts", time_between)
-"""
 
 
+
+sns.boxplot(sim_peak)
+plt.show()
 
 frames = []
 
 for n in range(n_sim):
-    model_out = pd.read_csv(f"CSV_temp/model_temp_{legitimacy_kind}_{n}.csv")
+    model_out = pd.read_csv(f"CSV_temp/model_{legitimacy_kind}_{n}.csv")
     print(n)
     if n > 0:
         model_out.drop([0])
@@ -106,9 +109,13 @@ result = pd.concat(frames)
 print(result)
 
 
-sns.lineplot(data=result, x="Unnamed: 0", y="Active")
-sns.lineplot(data=result, x="Unnamed: 0", y="Fighting")
-sns.lineplot(data=result, x="Unnamed: 0", y="Quiescent")
-sns.lineplot(data=result, x="Unnamed: 0", y="Jailed")
+ax = sns.lineplot(data=result, x="Unnamed: 0", y="Active", label="Active")
+sns.lineplot(data=result, x="Unnamed: 0", y="Fighting", label="Fighting")
+sns.lineplot(data=result, x="Unnamed: 0", y="Quiescent", label="Quiescent")
+sns.lineplot(data=result, x="Unnamed: 0", y="Jailed", label="Jailed")
+ax.set_xlabel('Step')
+ax.set_ylabel('Number of Citizens')
+ax.set_title('Citizen Condition Over Time')
 
+plt.legend()
 plt.show()

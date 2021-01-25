@@ -34,9 +34,8 @@ param_Ignas = param_values[480:]
 # print(len(param_Cat),len(param_Dante),len(param_Kamiel))
 
 """Choose your param set and set file name <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"""
-param_values = param_Dante
-print("Total runs:",len(param_values)*replicates)
-data_file_name = "epstein_civil_violence_Normal+Network Grid/SA_data_Dante/SA_data_180_200.csv"
+# param_values = param_Dante
+data_file_name = "epstein_civil_violence_Normal+Network Grid/SA_data/SA_data_NAME.csv"
 
 #%%
 model_reporters = {
@@ -91,8 +90,7 @@ for vals in param_values:
             title = title + "_" + str(value)
         # print(data)
         # print(iteration_data) # Apparently the second row is the dataframe
-        
-        iteration_data[1].to_csv("epstein_civil_violence_Normal+Network Grid/SA_data_Dante/" + title + "-" + str(i)+"_iteration.csv")
+        iteration_data[1].to_csv("epstein_civil_violence_Normal+Network Grid/SA_data/" + title + "-" + str(i)+"_iteration.csv")
         # data['DataCollector'] = None
         count += 1
         title_count += 1
@@ -106,5 +104,6 @@ total_end = time.time() - total_start
 print("Total time",total_end)
 # print(param_values)
 print(data)
+data.to_csv(data_file_name)
 
 exit()
