@@ -103,25 +103,12 @@ class Citizen(Agent):
         # go throught the list of agents and calculate the number of fighting agents
 
         actives = 0
-<<<<<<< HEAD
-        itteration = 0
-        N_network_neighbors = len(self.network_neighbors)
-=======
         N_network_neighbors = len(self.network_neighbors)
         itterations = 0
->>>>>>> ba046af7f527081048e3aba427dc1b37f9995a43
         
         # count the number of active agents
         
         for citizen in self.model.schedule.agents:
-<<<<<<< HEAD
-            if citizen.unique_id == self.network_neighbors[itteration]:
-                itteration += 1
-                if citizen.condition == "Active":
-                    actives += 1
-            if itteration > N_network_neighbors - 1:
-                break
-=======
             for network_neighbor_id in self.network_neighbors:
                 if citizen.unique_id == network_neighbor_id:
                     itterations += 1
@@ -132,7 +119,6 @@ class Citizen(Agent):
                 break
                 
         #print(f"2 Active: {actives/N_network_neighbors*100} %")
->>>>>>> ba046af7f527081048e3aba427dc1b37f9995a43
 
         if self.model.legitimacy_kind == "Fixed":
             self.regime_legitimacy

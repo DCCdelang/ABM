@@ -20,7 +20,7 @@ problem = {
 #%%
 # Set the repetitions, the amount of steps, and the amount of distinct values per variable
 replicates = 5 # Will be 5
-max_steps = 10 # Will be 400 (?)
+max_steps = 400 # Will be 400 (?)
 distinct_samples = 100 # Will be 100
 
 param_values = saltelli.sample(problem, distinct_samples, calc_second_order=False)
@@ -35,8 +35,9 @@ param_Ignas = param_values[480:]
 # print(len(param_Cat),len(param_Dante),len(param_Kamiel))
 
 """Choose your param set and set file name <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"""
-param_values = param_Dante
-data_file_name = "epstein_civil_violence_Normal+Network Grid/SA_data_Dante/SA_data.csv"
+param_values = param_Louky
+data_file_name = r"C:\Users\Gebruiker\OneDrive\Computational_Science\Year1_Semester1_Block3\ABM\epstein_civil_violence_Normal+Network Grid\SA_data_Louky\SA_data.csv"
+
 
 #%%
 model_reporters = {
@@ -91,7 +92,7 @@ for i in range(replicates):
         # print(data)
         # print(iteration_data) # Apparently the second row is the dataframe
         
-        iteration_data[1].to_csv("epstein_civil_violence_Normal+Network Grid/SA_data_Dante/" + title + "-" + str(i)+"_iteration.csv")
+        iteration_data[1].to_csv(r"C:\Users\Gebruiker\OneDrive\Computational_Science\Year1_Semester1_Block3\ABM\epstein_civil_violence_Normal+Network Grid\SA_data_Louky\SA_" + title + "-" + str(i)+"_iteration.csv")
         # data['DataCollector'] = None
         count += 1
         end = time.time() - start

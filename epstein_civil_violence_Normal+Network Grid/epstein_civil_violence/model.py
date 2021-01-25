@@ -4,19 +4,13 @@ from mesa.space import Grid
 from mesa.datacollection import DataCollector
 import networkx as nx
 import random
-<<<<<<< HEAD
-=======
 from scipy.signal import find_peaks
 import matplotlib.pyplot as plt
->>>>>>> ba046af7f527081048e3aba427dc1b37f9995a43
 
 from .agent import Cop, Citizen
 
 import math
-<<<<<<< HEAD
-=======
 import numpy as np
->>>>>>> ba046af7f527081048e3aba427dc1b37f9995a43
 
 class EpsteinCivilViolence(Model):
     """
@@ -139,16 +133,10 @@ class EpsteinCivilViolence(Model):
         # initialise a network
         
         self.G = nx.barabasi_albert_graph(self.N_agents, links)
-<<<<<<< HEAD
-        
-        # relabel nodes, so only citizens are on it
-        
-=======
         # self.G = nx.watts_strogatz_graph(self.N_agents, links, 6)
         # self.G = nx
         # relabel nodes, so only citizens are on it
 
->>>>>>> ba046af7f527081048e3aba427dc1b37f9995a43
         node_list = list(self.G.nodes)
         random.shuffle(self.citizen_ids)
         mapping = dict(zip(node_list, self.citizen_ids))
@@ -156,11 +144,8 @@ class EpsteinCivilViolence(Model):
 
         self.running = True
         self.datacollector.collect(self)
-<<<<<<< HEAD
-=======
         
         # self.draw_network(self.G)
->>>>>>> ba046af7f527081048e3aba427dc1b37f9995a43
 
     def step(self):
         """
@@ -174,9 +159,6 @@ class EpsteinCivilViolence(Model):
         self.iteration += 1
         if self.iteration > self.max_iters:
             self.running = False
-<<<<<<< HEAD
-        print("step", self.iteration)
-=======
         if self.iteration % 10 == 0:
             print("step", self.iteration)
 
@@ -190,7 +172,6 @@ class EpsteinCivilViolence(Model):
         plt.show()
         return 1
 
->>>>>>> ba046af7f527081048e3aba427dc1b37f9995a43
 
     @staticmethod
     def update_legitimacy_feedback(model):
@@ -249,8 +230,6 @@ class EpsteinCivilViolence(Model):
             if agent.breed == "citizen" and agent.fighting_time_cit:
                 count += 1
         return count
-<<<<<<< HEAD
-=======
 
 
     """
@@ -315,4 +294,3 @@ class EpsteinCivilViolence(Model):
         model_out = model.datacollector.get_model_vars_dataframe()
         actives_list = model_out["Active"].to_list()
         return sum(actives == 0 for actives in actives_list)/len(actives_list)
->>>>>>> ba046af7f527081048e3aba427dc1b37f9995a43
