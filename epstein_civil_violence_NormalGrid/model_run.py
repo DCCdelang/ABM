@@ -8,7 +8,10 @@ from epstein_civil_violence.agent import Citizen, Cop
 from epstein_civil_violence.model import EpsteinCivilViolence
 
 import time
+<<<<<<< HEAD
+=======
 #%%
+>>>>>>> ba046af7f527081048e3aba427dc1b37f9995a43
 legitimacy_kind = "Fixed" # choose between "Fixed","Global","Local"
 smart_cops = True
 cop_density = .04
@@ -49,6 +52,15 @@ peaks, _ = find_peaks(model_out["Active"], height=50)
 print("Indices of peaks:", peaks, "Amount:", len(peaks))
 
 actives_list = model_out["Active"].to_list()
+for peak in peaks:
+    print(peak, actives_list[peak])
+print(actives_list)
+
+peak_intervals = []
+if len(peaks)>1:
+    for i in range(len(peaks)-1):
+        peak_intervals.append(peaks[i+1] - peaks[i])
+print(peak_intervals)
 
 time_between = []
 time = 0
