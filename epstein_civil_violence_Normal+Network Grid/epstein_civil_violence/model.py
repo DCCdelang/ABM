@@ -56,7 +56,8 @@ class EpsteinCivilViolence(Model):
         max_iters=500,
         max_fighting_time=1, # NEW variable
         smart_cops = False,
-        legitimacy_kind = "Global", # choose between "Fixed","Global","Local"
+        legitimacy_kind = "Global", # choose between "Fixed","Global","Local",
+        network = "Barabasi"
     ):
         super().__init__()
         self.height = height
@@ -79,6 +80,7 @@ class EpsteinCivilViolence(Model):
         self.N_agents = 0
         self.max_fighting_time = max_fighting_time
         self.smart_cops = smart_cops
+        self.network = network
         model_reporters = {
             "Quiescent": lambda m: self.count_type_citizens(m, "Quiescent"),
             "Active": lambda m: self.count_type_citizens(m, "Active"),
@@ -129,13 +131,20 @@ class EpsteinCivilViolence(Model):
                 self.grid[y][x] = citizen
                 self.schedule.add(citizen)
                 self.N_agents += 1
-                
-        # initialise a network
+       
         
-        self.G = nx.barabasi_albert_graph(self.N_agents, links)
-        # self.G = nx.watts_strogatz_graph(self.N_agents, links, 6)
-        # self.G = nx
-        # relabel nodes, so only citizens are on it
+        # initialise a network
+        network = "Renyi"
+        if self.network == "Barabasi":
+            self.G = nx.barabasi_albert_graph(self.N_agents, links)
+        elif self.network == "Renyi":
+            seed = np.random.randint(0,90000)
+            n = self.N_agents
+            probability =  ((np.log(n))/n)
+            self.G = nx.erdos_renyi_graph(self.N_agents, probability+0.001, seed)
+        else:
+            seed = np.random.randint(0,90000)
+            self.G = nx.watts_strogatz_graph(self.N_agents, links, seed)
 
         node_list = list(self.G.nodes)
         random.shuffle(self.citizen_ids)

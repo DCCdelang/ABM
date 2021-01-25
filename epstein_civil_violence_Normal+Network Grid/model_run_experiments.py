@@ -11,14 +11,16 @@ from epstein_civil_violence.model import EpsteinCivilViolence
 
 import time
 legitimacy_kind = np.array(["Fixed", "Global", "Local"]) # choose between "Fixed","Global","Local"
-leg = legitimacy_kind = "Fixed"
+leg = legitimacy_kind = "Global"
 smart_cops = False
 cop_density = .04
 
 n_sim = 5
 max_iters = 100
 sim_peak = []
+networks = ["Barabasi", "Renyi", "Small_world"]
 #for leg in legitimacy_kind:
+
 for n in range(n_sim):
     #start = time.time()
     model = EpsteinCivilViolence(height=40, 
@@ -32,7 +34,9 @@ for n in range(n_sim):
                            max_iters=max_iters, # cap the number of steps the model takes
                            smart_cops = smart_cops,
                            legitimacy_kind = leg, # choose between "Fixed","Global","Local"
-                           max_fighting_time=1
+                           max_fighting_time=1,
+                           network = network,
+
                            ) 
     model.run_model()
 
@@ -42,8 +46,8 @@ for n in range(n_sim):
     model_out = model.datacollector.get_model_vars_dataframe()
     agent_out = model.datacollector.get_agent_vars_dataframe()
 
-    model_out.to_csv(f"CSV_temp/model_temp_{legitimacy_kind}_{n}.csv")
-    agent_out.to_csv(f"CSV_temp/agent_temp_{legitimacy_kind}_{n}.csv")
+    model_out.to_csv(f"CSV_temp/model_temp_{network}_{legitimacy_kind}_{n}.csv")
+    agent_out.to_csv(f"CSV_temp/agent_temp_{network}_{legitimacy_kind}_{n}.csv")
 
 
 

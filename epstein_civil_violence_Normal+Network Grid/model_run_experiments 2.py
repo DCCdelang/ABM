@@ -42,12 +42,12 @@ for n in range(n_sim):
     model_out = model.datacollector.get_model_vars_dataframe()
     agent_out = model.datacollector.get_agent_vars_dataframe()
 
-    model_out.to_csv(f"CSV_temp/model_temp_{legitimacy_kind}_{n}.csv")
-    agent_out.to_csv(f"CSV_temp/agent_temp_{legitimacy_kind}_{n}.csv")
+    model_out.to_csv(f"model_temp_{legitimacy_kind}_{n}.csv")
+    agent_out.to_csv(f"agent_temp_{legitimacy_kind}_{n}.csv")
 
 
 
-    model_out = pd.read_csv(f"CSV_temp/model_temp_{legitimacy_kind}_{n}.csv")
+    model_out = pd.read_csv(f"/model_temp_{legitimacy_kind}_{n}.csv")
 
     #print(model_out["Active"].mean())
     #print(model_out["Active"].std())
@@ -89,7 +89,7 @@ for n in range(n_sim):
 frames = []
 
 for n in range(n_sim):
-    model_out = pd.read_csv(f"CSV_temp/model_temp_{legitimacy_kind}_{n}.csv")
+    model_out = pd.read_csv(f"model_temp_{legitimacy_kind}_{n}.csv")
     print(n)
     if n > 0:
         model_out.drop([0])

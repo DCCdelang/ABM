@@ -135,7 +135,7 @@ class Citizen(Agent):
             (self.condition == "Quiescent"
             and (self.grievance - net_risk) > self.threshold)
             or (self.condition == "Quiescent"
-            and actives/N_network_neighbors > 0.5)
+            and self.calculate(actives, N_network_neighbors) > 0.5)
             
         ):
             self.condition = "Active"
@@ -217,6 +217,13 @@ class Citizen(Agent):
         # raise ValueError
 
         return self.regime_legitimacy * (1/4*(L_leg+L_consent)+1/2*L_just)
+
+    def calculate(self, actives, N_network_neighbors):
+        if N_network_neighbors == 0:
+            return 0
+        else:
+            return actives/N_network_neighbors
+
 
 class Cop(Agent):
     """
