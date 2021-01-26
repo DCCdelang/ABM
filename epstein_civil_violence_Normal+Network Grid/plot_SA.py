@@ -10,15 +10,10 @@ from itertools import combinations
 import time
 problem = {
     'num_vars': 4,
-    'names': ['links', 'citizen_vision', 'cop_vision', 'max_jail_term'],
+    'names': ['Number of links', 'Citizen Vision', 'Cop Vision', 'max Jail term'],
     'bounds': [[1, 7], [1, 10], [1, 10], [1, 50]]
 }
-# param_Cat = param_values[0:120]
-# param_Dante = param_values[180:200] # 140,160,180,200,220,240
-# param_Kamiel = param_values[240:360]
-# param_Louky = param_values[360:480]
-# param_Ignas = param_values[480:]
-
+cat_0 = pd.read_csv("epstein_civil_violence_Normal+Network Grid/SA_data_Cat/SA_data_Cat.csv")[:120]
 cat_1 = pd.read_csv("epstein_civil_violence_Normal+Network Grid/SA_data_Cat/SA_data_Cat_1/SA_data_Cat_1.csv")
 cat_2 = pd.read_csv("epstein_civil_violence_Normal+Network Grid/SA_data_Cat/SA_data_Cat_2/SA_data_Cat_2.csv")
 cat_3 = pd.read_csv("epstein_civil_violence_Normal+Network Grid/SA_data_Cat/SA_data_Cat_3/SA_data_Cat_3.csv")
@@ -26,7 +21,7 @@ cat_4 = pd.read_csv("epstein_civil_violence_Normal+Network Grid/SA_data_Cat/SA_d
 cat_5 = pd.read_csv("epstein_civil_violence_Normal+Network Grid/SA_data_Cat/SA_data_Cat_5/SA_data_Cat_5.csv")
 cat_6 = pd.read_csv("epstein_civil_violence_Normal+Network Grid/SA_data_Cat/SA_data_Cat_6/SA_data_Cat_6.csv")
 
-Cat_Total = pd.concat([cat_1,cat_2,cat_3,cat_4,cat_5,cat_6])
+Cat_Total = pd.concat([cat_0,cat_1,cat_2,cat_3,cat_4,cat_5,cat_6])
 print(Cat_Total.shape)
 
 dante_1 = pd.read_csv("epstein_civil_violence_Normal+Network Grid/SA_data_Dante/SA_data_120_140.csv")
@@ -62,10 +57,12 @@ print(Total_SA.head())
 Si_active = sobol.analyze(problem, Total_SA['perc_time_rebel'].values, print_to_console=True, calc_second_order=False)
 Si_calm = sobol.analyze(problem, Total_SA['perc_time_calm'].values, print_to_console=True, calc_second_order=False)
 Si_mean_peak_size= sobol.analyze(problem, Total_SA['mean_peak_size'].values, print_to_console=True, calc_second_order=False)
+Si_std_peak_size= sobol.analyze(problem, Total_SA['std_peak_size'].values, print_to_console=True, calc_second_order=False)
 Si_peak_interval = sobol.analyze(problem, Total_SA['mean_peak_interval'].values, print_to_console=True, calc_second_order=False)
+Si_std_peak_interval = sobol.analyze(problem, Total_SA['std_peak_interval'].values, print_to_console=True, calc_second_order=False)
 Si_peaks = sobol.analyze(problem, Total_SA['Peaks'].values, print_to_console=True, calc_second_order=False)
 
-def plot_index(s, params, i, title=''):
+def plot_index(s, params, i, title='', name = ''):
     """
     Creates a plot for Sobol sensitivity analysis that shows the contributions
     of each parameter to the global sensitivity.
@@ -94,20 +91,22 @@ def plot_index(s, params, i, title=''):
 
     plt.title(title)
     plt.ylim([-0.2, len(indices) - 1 + 0.2])
+    plt.xlim(-0.1,1.1)
     plt.yticks(range(l), params)
     plt.errorbar(indices, range(l), xerr=errors, linestyle='None', marker='o')
-    plt.axvline(0, c='k')
+    plt.axvline(0, c='k',)
     plt.tight_layout()
-    plt.savefig("epstein_civil_violence_Normal+Network Grid/ALL_SA/"+title+".png")
+    plt.savefig("epstein_civil_violence_Normal+Network Grid/ALL_SA/"+name+"_"+i+".png")
 
-Si = [Si_active, Si_calm, Si_mean_peak_size, Si_peaks, Si_peak_interval]
-title = ["Si_active", "Si_calm", "Si_mean_peak_size", "Si_peaks", "Si_peak_interval"]
+Si = [Si_active, Si_calm, Si_mean_peak_size, Si_peaks, Si_peak_interval, Si_std_peak_size, Si_std_peak_interval]
+title = ["Actives > 50", "Actives = 0", "Mean Peak size", "Number of Peaks", "Mean Peak Interval", "Std Peak size", "Std Peak Interval"]
+name = ["Si_active", "Si_calm", "Si_mean_peak_size", "Si_peaks", "Si_peak_interval", "Si_std_peak_size", "Si_std_peak_interval"]
 
 for i in range(len(Si)):
     # First order
-    plot_index(Si[i], problem['names'], '1', 'First order '+title[i])
+    plot_index(Si[i], problem['names'], '1', 'First Order SA - '+title[i], name[i])
     plt.show()
 
     # Total order
-    plot_index(Si[i], problem['names'], 'T', 'Total order '+title[i])
+    plot_index(Si[i], problem['names'], 'T', 'Total Order SA - '+title[i], name[i])
     plt.show()
