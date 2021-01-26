@@ -100,7 +100,7 @@ analysis = df.loc[(df['Network'] == 'Small-world')]
 ax = sns.histplot(data=analysis, x=x, kde=True, bins=10)
 
 ax.set_xlabel("Bin", size = 13)
-ax.set_ylabel('Frequency', size = 13)
+ax.set_ylabel(x, size = 13)
 ax.set_title(f"Distribution of {x} - Small-world", size = 13)
 
 plt.savefig(f"Data_visualisation/data = {x} network = Small-world.pdf")
@@ -117,7 +117,7 @@ plt.show()
 
 ax = sns.boxplot(x="Network", y=x, data=df)
 ax.set_title(f"Boxplot of {x}", size = 13)
-ax.set_xlabel("Bin", size = 13)
+ax.set_xlabel(" ", size = 13)
 ax.set_ylabel('Frequency', size = 13)
 plt.savefig(f"Data_visualisation/data = {x}.pdf")
 
