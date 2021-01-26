@@ -53,7 +53,7 @@ for n in range(n_sim):
     model_out = model.datacollector.get_model_vars_dataframe()
     agent_out = model.datacollector.get_agent_vars_dataframe()
     
-    model_out.to_csv(f"Data_Legitimacy/model_temp_{vision}_{network}_{legitimacy_kind}_{n}.csv")
+    model_out.to_csv(f"Data_Legitimacy/model_temp_{vision}_{network}_{legitimacy}_{n}.csv")
 
 
 # %%
