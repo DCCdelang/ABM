@@ -113,10 +113,6 @@ class Citizen(Agent):
         """
 
         self.neighbors = self.model.grid.get_neighbors(self.pos)
-
-        
-
-        
         self.empty_neighbors = [
             c for c in self.neighbors if self.model.grid.is_cell_empty(c)
         ]

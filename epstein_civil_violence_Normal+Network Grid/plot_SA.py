@@ -61,7 +61,7 @@ Si_std_peak_size= sobol.analyze(problem, Total_SA['std_peak_size'].values, print
 Si_peak_interval = sobol.analyze(problem, Total_SA['mean_peak_interval'].values, print_to_console=True, calc_second_order=False)
 Si_std_peak_interval = sobol.analyze(problem, Total_SA['std_peak_interval'].values, print_to_console=True, calc_second_order=False)
 Si_peaks = sobol.analyze(problem, Total_SA['Peaks'].values, print_to_console=True, calc_second_order=False)
-
+exit()
 def plot_index(s, params, i, title='', name = ''):
     """
     Creates a plot for Sobol sensitivity analysis that shows the contributions
