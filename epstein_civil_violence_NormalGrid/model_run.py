@@ -7,8 +7,15 @@ from epstein_civil_violence.agent import Citizen, Cop
 from epstein_civil_violence.model import EpsteinCivilViolence
 
 import time
+<<<<<<< HEAD
 legitimacy_kind = "Global" # choose between "Fixed","Global","Local"
 smart_cops = False
+
+#%%
+
+legitimacy_kind = "Fixed" # choose between "Fixed","Global","Local"
+smart_cops = True
+
 cop_density = .04
 
 # start = time.time()

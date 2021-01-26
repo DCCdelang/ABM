@@ -57,7 +57,7 @@ class EpsteinCivilViolence(Model):
         max_fighting_time=1, # NEW variable
         smart_cops = False,
         legitimacy_kind = "Global", # choose between "Fixed","Global","Local",
-        network = "Barabasi"
+        network = "Barabasi" # "Barbasi", "None", "Renyi", "small world(else)"
     ):
         super().__init__()
         self.height = height
@@ -142,6 +142,9 @@ class EpsteinCivilViolence(Model):
             n = self.N_agents
             probability =  ((np.log(n))/n)
             self.G = nx.erdos_renyi_graph(self.N_agents, probability+0.001, seed)
+        elif self.network == "None":
+            seed = np.random.randint(0,90000)
+            self.G = nx.erdos_renyi_graph(self.N_agents, 0, seed)
         else:
             seed = np.random.randint(0,90000)
             self.G = nx.watts_strogatz_graph(self.N_agents, links,0.5, seed)
