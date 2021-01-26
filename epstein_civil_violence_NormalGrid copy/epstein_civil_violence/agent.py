@@ -132,7 +132,6 @@ class Citizen(Agent):
         """
         Based on the ratio of cops to actives in my neighborhood, estimate the
         p(Arrest | I go active).
-
         """
         cops_in_vision = len([c for c in self.neighbors if c.breed == "cop"])
         actives_in_vision = 1.0  # citizen counts herself

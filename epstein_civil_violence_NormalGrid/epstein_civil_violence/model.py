@@ -134,7 +134,9 @@ class EpsteinCivilViolence(Model):
         self.iteration += 1
         if self.iteration > self.max_iters:
             self.running = False
-        print("step", self.iteration)
+        
+        if self.iteration %10 == 0:
+            print("step", self.iteration)
 
     @staticmethod
     def update_legitimacy_feedback(model):
