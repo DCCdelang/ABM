@@ -8,10 +8,6 @@ from epstein_civil_violence.agent import Citizen, Cop
 from epstein_civil_violence.model import EpsteinCivilViolence
 
 import time
-<<<<<<< HEAD
-=======
-#%%
->>>>>>> ba046af7f527081048e3aba427dc1b37f9995a43
 legitimacy_kind = "Fixed" # choose between "Fixed","Global","Local"
 smart_cops = True
 cop_density = .04
@@ -86,7 +82,7 @@ for i in range(1,len(actives_list)-1):
     #     time_between.append(time-1)
     #     time = 0
 print("Times of inter-outerbursts", time_between)
-
+exit()
 
 # %%
 
