@@ -57,9 +57,9 @@ for network in networks:
 result = pd.concat(frames)
 # plt.style.use('ggplot')
 x = "Total actives"
-x = 'Peaks'
-x = 'Mean peak interval'
-x = "Mean peak size"
+# x = 'Peaks'
+# x = 'Mean peak interval'
+# x = "Mean peak size"
 
 df = pd.DataFrame(distribution,columns=["Network", "Peaks","Mean peak size","Std peak size","Mean peak interval","std peak interval", "Total actives" ,"Percentage rebelious", "Percentage calm"])
 
@@ -70,7 +70,7 @@ analysis = df.loc[(df['Network'] == 'None')]
 ax = sns.histplot(data=analysis, x=x, kde=True, bins=10)
 ax.set_xlabel("Bin", size = 13)
 ax.set_ylabel('Frequency', size = 13)
-ax.set_title(f"Distribution of {x} - None", size = 13)
+# ax.set_title(f"Distribution of {x} - None", size = 13)
 
 plt.savefig(f"Data_visualisation/data = {x} network = None.pdf")
 plt.show()
@@ -80,7 +80,7 @@ analysis = df.loc[(df['Network'] == 'Barabasi')]
 ax = sns.histplot(data=analysis, x=x, kde=True, bins=10)
 ax.set_xlabel("Bin", size = 13)
 ax.set_ylabel('Frequency', size = 13)
-ax.set_title(f"Distribution of {x} - Barabasi", size = 13)
+# ax.set_title(f"Distribution of {x} - Barabasi", size = 13)
 
 plt.savefig(f"Data_visualisation/data = {x} network = Barabsi.pdf")
 plt.show()
@@ -91,7 +91,7 @@ ax = sns.histplot(data=analysis, x=x, kde=True, bins=10)
 
 ax.set_xlabel("Bin", size = 13)
 ax.set_ylabel('Frequency', size = 13)
-ax.set_title(f"Distribution of {x} - Renyi", size = 13)
+# ax.set_title(f"Distribution of {x} - Renyi", size = 13)
 
 plt.savefig(f"Data_visualisation/data = {x} network = Renyi.pdf")
 plt.show()
@@ -101,7 +101,7 @@ ax = sns.histplot(data=analysis, x=x, kde=True, bins=10)
 
 ax.set_xlabel("Bin", size = 13)
 ax.set_ylabel(x, size = 13)
-ax.set_title(f"Distribution of {x} - Small-world", size = 13)
+# ax.set_title(f"Distribution of {x} - Small-world", size = 13)
 
 plt.savefig(f"Data_visualisation/data = {x} network = Small-world.pdf")
 plt.show()
@@ -116,7 +116,7 @@ plt.show()
 plt.show()
 
 ax = sns.boxplot(x="Network", y=x, data=df)
-ax.set_title(f"Boxplot of {x}", size = 13)
+# ax.set_title(f"Boxplot of {x}", size = 13)
 ax.set_xlabel(" ", size = 13)
 ax.set_ylabel('Frequency', size = 13)
 plt.savefig(f"Data_visualisation/data = {x}.pdf")
