@@ -134,7 +134,7 @@ class EpsteinCivilViolence(Model):
        
         
         # initialise a network
-        network = "Renyi"
+      
         if self.network == "Barabasi":
             self.G = nx.barabasi_albert_graph(self.N_agents, links)
         elif self.network == "Renyi":
@@ -147,7 +147,7 @@ class EpsteinCivilViolence(Model):
             self.G = nx.erdos_renyi_graph(self.N_agents, 0, seed)
         else:
             seed = np.random.randint(0,90000)
-            self.G = nx.watts_strogatz_graph(self.N_agents, links, seed)
+            self.G = nx.watts_strogatz_graph(self.N_agents, links,0.5, seed)
 
         node_list = list(self.G.nodes)
         random.shuffle(self.citizen_ids)
