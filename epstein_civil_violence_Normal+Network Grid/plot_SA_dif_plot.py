@@ -62,19 +62,17 @@ Si_peak_interval = sobol.analyze(problem, Total_SA['mean_peak_interval'].values,
 Si_std_peak_interval = sobol.analyze(problem, Total_SA['std_peak_interval'].values, print_to_console=True, calc_second_order=False)
 Si_peaks = sobol.analyze(problem, Total_SA['Peaks'].values, print_to_console=True, calc_second_order=False)
 
-def plot_index(s, params, i, title='', name = ''):
-    """
-    Creates a plot for Sobol sensitivity analysis that shows the contributions
-    of each parameter to the global sensitivity.
+Si = [Si_active, Si_calm, Si_mean_peak_size, Si_peaks, Si_peak_interval, Si_std_peak_size, Si_std_peak_interval]
+titles = ["Actives > 50", "Actives = 0", "Mean Peak size", "Number of Peaks", "Mean Peak Interval", "Std Peak size", "Std Peak Interval"]
+names = ["Si_active", "Si_calm", "Si_mean_peak_size", "Si_peaks", "Si_peak_interval", "Si_std_peak_size", "Si_std_peak_interval"]
 
-    Args:
-        s (dict): dictionary {'S#': dict, 'S#_conf': dict} of dicts that hold
-            the values for a set of parameters
-        params (list): the parameters taken from s
-        i (str): string that indicates what order the sensitivity is.
-        title (str): title for the plot
-    """
-
+for ind in range(len(Si)):
+    # First order\
+    s = Si[ind]
+    params = problem['names']
+    i = "T"
+    title='First Order SA - '+titles[ind]
+    name = names[ind]
     if i == '2':
         p = len(params)
         params = list(combinations(params, 2))
@@ -85,30 +83,16 @@ def plot_index(s, params, i, title='', name = ''):
     else:
         indices = s['S' + i]
         errors = s['S' + i + '_conf']
-        plt.figure()
+        # plt.figure()
 
     l = len(indices)
+    plt.errorbar(indices, range(l), xerr=errors, linestyle='None', marker='o', label = titles[ind])
 
-    # plt.title(title)
-    plt.ylim([-0.2, len(indices) - 1 + 0.2])
-    plt.xlim(-0.1,1.1)
-    plt.yticks(range(l), params, fontsize=14)
-    plt.xticks(fontsize=14)
-    plt.errorbar(indices, range(l), xerr=errors, linestyle='None', marker='o', capsize=2)
-    plt.axvline(0, c='k',)
-    plt.tight_layout()
-    plt.savefig("epstein_civil_violence_Normal+Network Grid/ALL_SA/"+name+"_"+i+".png")
-
-Si = [Si_active, Si_calm, Si_mean_peak_size, Si_peaks, Si_peak_interval, Si_std_peak_size, Si_std_peak_interval]
-title = ["Actives > 50", "Actives = 0", "Mean Peak size", "Number of Peaks", "Mean Peak Interval", "Std Peak size", "Std Peak Interval"]
-name = ["Si_active", "Si_calm", "Si_mean_peak_size", "Si_peaks", "Si_peak_interval", "Si_std_peak_size", "Si_std_peak_interval"]
-
-for i in range(len(Si)):
-    # First order
-    plot_index(Si[i], problem['names'], '1', 'First Order SA - '+title[i], name[i])
-    plt.show()
-
-    # Total order
-    plot_index(Si[i], problem['names'], 'T', 'Total Order SA - '+title[i], name[i])
-    plt.show()
-    # exit()
+plt.ylim([-0.2, len(indices) - 1 + 0.2])
+plt.xlim(-0.1,1.1)
+plt.yticks(range(l), params)
+plt.axvline(0, c='k',)
+plt.tight_layout()
+plt.legend()
+# plt.savefig("epstein_civil_violence_Normal+Network Grid/ALL_SA/"+name+"_"+i+".png")
+plt.show()
