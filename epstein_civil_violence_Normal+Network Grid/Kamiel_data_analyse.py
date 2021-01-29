@@ -18,7 +18,8 @@ time_peaks = []
 peak_interval = []
 for network in networks:
     for n in range(n_sim):
-        model_out = pd.read_csv(f"model_temp_{network}_{legitimacy_kind}_{n}.csv")
+        # epstein_civil_violence_Normal+Network Grid\Data_vision_7\model_temp_Barabasi_Global_1.csv
+        model_out = pd.read_csv(f"Data_vision_7/model_temp_{network}_{legitimacy_kind}_{n}.csv")
         actives = model_out["Active"]
         actives = np.array(actives)
 
@@ -54,7 +55,7 @@ for network in networks:
         frames.append(model_out)
 
 result = pd.concat(frames)
-
+# plt.style.use('ggplot')
 x = "Total actives"
 # x = 'Peaks'
 # x = 'Mean peak interval'
@@ -66,32 +67,43 @@ df
 
 
 analysis = df.loc[(df['Network'] == 'None')]
+ax = sns.histplot(data=analysis, x=x, kde=True, bins=10)
+ax.set_xlabel("Bin", size = 13)
+ax.set_ylabel('Frequency', size = 13)
+# ax.set_title(f"Distribution of {x} - None", size = 13)
 
-sns.histplot(data=analysis, x=x, kde=True, bins=10)
-plt.title(f"data = {x} network = None", fontsize =18)
-plt.savefig(f"data = {x} network = None.png")
+plt.savefig(f"Data_visualisation/data = {x} network = None.pdf")
 plt.show()
 
 analysis = df.loc[(df['Network'] == 'Barabasi')]
 
-sns.histplot(data=analysis, x=x, kde=True, bins=10)
-plt.title(f"data = {x} network = Barabasi", fontsize =18)
-plt.savefig(f"data = {x} network = Barabsi.png")
+ax = sns.histplot(data=analysis, x=x, kde=True, bins=10)
+ax.set_xlabel("Bin", size = 13)
+ax.set_ylabel('Frequency', size = 13)
+# ax.set_title(f"Distribution of {x} - Barabasi", size = 13)
+
+plt.savefig(f"Data_visualisation/data = {x} network = Barabsi.pdf")
 plt.show()
 
 
 analysis = df.loc[(df['Network'] == 'Renyi')]
+ax = sns.histplot(data=analysis, x=x, kde=True, bins=10)
 
-sns.histplot(data=analysis, x=x, kde=True, bins=10)
-plt.title(f"data = {x} network = Renyi", fontsize =18)
-plt.savefig(f"data = {x} network = Renyi.png")
+ax.set_xlabel("Bin", size = 13)
+ax.set_ylabel('Frequency', size = 13)
+# ax.set_title(f"Distribution of {x} - Renyi", size = 13)
+
+plt.savefig(f"Data_visualisation/data = {x} network = Renyi.pdf")
 plt.show()
 
 analysis = df.loc[(df['Network'] == 'Small-world')]
+ax = sns.histplot(data=analysis, x=x, kde=True, bins=10)
 
-sns.histplot(data=analysis, x=x, kde=True, bins=10)
-plt.title(f"data = {x} network = Small-world", fontsize =18)
-plt.savefig(f"data = {x} network = Small-world.png")
+ax.set_xlabel("Bin", size = 13)
+ax.set_ylabel(x, size = 13)
+# ax.set_title(f"Distribution of {x} - Small-world", size = 13)
+
+plt.savefig(f"Data_visualisation/data = {x} network = Small-world.pdf")
 plt.show()
 
 
@@ -104,8 +116,10 @@ plt.show()
 plt.show()
 
 ax = sns.boxplot(x="Network", y=x, data=df)
-plt.title(f"data = {x}", fontsize =18)
-plt.savefig(f"data = {x}.png")
+# ax.set_title(f"Boxplot of {x}", size = 13)
+ax.set_xlabel(" ", size = 13)
+ax.set_ylabel('Frequency', size = 13)
+plt.savefig(f"Data_visualisation/data = {x}.pdf")
 
 
 None_ = df.loc[(df['Network'] == 'None')]
