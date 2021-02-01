@@ -20,16 +20,13 @@ The model can then be played by executing: ``run.py`` in this directory. e.g.
 Then open your browser to [http://127.0.0.1:8521/](http://127.0.0.1:8521/) and press Reset, then Run. 
 
 
-![Model](Model.png)
+![Model](./epstein_civil_violence_Normal+Network Grid/Images/Model.png)
 
 This shows how the agents move in the grid as shown above. The red dots represent the active citizens, the green dots the fighting citizens and the blue dots the quiscent citizens. The small black dots are the cops.
 
-## Folders and Files
+## Files
 
-
-# folder: epstein_civil_violence_Normal+Network Grid : Core model and agent code .
-
-
+* ``epstein_civil_violence_Normal+Network Grid``: Core model and agent code.
 * ``EpsteinCivilViolenceServer.py``: Sets up the interactive visualization.
 * ``Epstein Civil Violence.ipynb``: Jupyter notebook conducting some preliminary analysis of the model.
 
