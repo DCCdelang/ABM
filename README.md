@@ -20,7 +20,7 @@ The model can then be played by executing: ``run.py`` in this directory. e.g.
 Then open your browser to [http://127.0.0.1:8521/](http://127.0.0.1:8521/) and press Reset, then Run. 
 
 
-![GitHub Logo](\epstein_civil_violence_Normal+Network Grid\Images\Model.png)
+![GitHub Logo](Model.png)
 Format: ![Alt Text](url)
 
 
