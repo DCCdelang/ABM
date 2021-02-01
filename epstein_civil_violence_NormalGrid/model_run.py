@@ -9,7 +9,7 @@ from epstein_civil_violence.model import EpsteinCivilViolence
 
 import time
 legitimacy_kind = "Fixed" # choose between "Fixed","Global","Local"
-max_iters = 20, # cap the number of steps the model takes
+max_iters = 200, # cap the number of steps the model takes
 smart_cops = False
 cop_density = .04
 
@@ -46,6 +46,7 @@ print("Mean amount of active citizens per step = ",model_out["Active"].mean())
 print("Std of amount of active citizens per step = ",model_out["Active"].std())
 print("Maximum of amount of active citizens in a time step = ",model_out["Active"].max())
 
+# line 49 - 78 give back measured properties of the model
 peaks, _ = find_peaks(model_out["Active"], height=50)
 print("Indices of peaks:", peaks, "Amount:", len(peaks))
 
@@ -76,6 +77,7 @@ for i in range(1,len(actives_list)-1):
 
 print("Times of inter-outerbursts", time_between)
 
+# Makes a plot of the state of the citizens
 ax = model_out[["Quiescent","Active", "Jailed", "Fighting"]].plot()
 ax.set_title('Citizen Condition Over Time')
 ax.set_xlabel('Step')
@@ -84,6 +86,8 @@ _ = ax.legend(bbox_to_anchor=(1.35, 1.025))
 plt.tight_layout()
 
 plt.show()
+
+# Makes a plot of perceived legitimacy
 if legitimacy_kind != "Local":
     ax = model_out[["Legitimacy"]].plot()
     ax.set_title('Citizen Condition Over Time')

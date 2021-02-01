@@ -11,10 +11,10 @@ The purpose of the model is to introduce a network representing social media con
 
 This repository contains 2 models, one model with a network which is in the ``epstein_civil_violence_Normal+Network Grid`` folder and one model without a network, which can be found in the ``epstein_civil_violence_NormalGrid`` folder. To run the model one must first choose which model he/she wants to run. 
 
-The model can then be played by executing: ``run.py`` in this directory. e.g.
+The model can then be played by executing: ``run.py``
 
 ```
-    $ python model_run.py
+    $ python run.py
 ``` 
 
 Then open your browser to [http://127.0.0.1:8521/](http://127.0.0.1:8521/) and press Reset, then Run. 
@@ -24,18 +24,17 @@ Then open your browser to [http://127.0.0.1:8521/](http://127.0.0.1:8521/) and p
 
 This shows how the agents move in the grid as shown above. The red dots represent the active citizens, the green dots the fighting citizens and the blue dots the quiscent citizens. The small black dots are the cops.
 
-## Files
+The data from the model can be retrieved by executing: ``model_run.py`` 
 
-* ``epstein_civil_violence_Normal+Network Grid``: Core model and agent code.
-* ``EpsteinCivilViolenceServer.py``: Sets up the interactive visualization.
-* ``Epstein Civil Violence.ipynb``: Jupyter notebook conducting some preliminary analysis of the model.
+```
+    $ python model_run.py
+``` 
+This will run the model for 200 iterations and returns a graph of the state of the citizens over time, a graph of the perceived legitimacy over time and features for analysing the results.
 
-## Further Reading
+## Paper on the model
+A more elaborate view of this model can be found in the paper .....
 
-This model is based adapted from:
-
-[Epstein, J. “Modeling civil violence: An agent-based computational approach”, Proceedings of the National Academy of Sciences, Vol. 99, Suppl. 3, May 14, 2002](http://www.pnas.org/content/99/suppl.3/7243.short)
-
-A similar model is also included with NetLogo:
-
-Wilensky, U. (2004). NetLogo Rebellion model. http://ccl.northwestern.edu/netlogo/models/Rebellion. Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
+## Folders
+* ``epstein_civil_violence_Normal+Network Grid``: In the Data, image and experiment folder files can be found which were used for the above mentioned paper.
+* ``epstein_civil_violence_NormalGrid``: The data folder is used for experiments of the above mentioned paper.
+* ``epstein_civil_violence`: This folder can be found in both above mentioned folders. In this folder the core model and agent code can be found.
