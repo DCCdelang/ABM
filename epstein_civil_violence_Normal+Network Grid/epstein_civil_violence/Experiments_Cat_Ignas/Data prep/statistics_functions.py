@@ -76,20 +76,24 @@ def process_data(data):
     std_peak_height = std_peak_size(data)
     mean_peak_int = mean_peak_interval(data)
     std_peak_int = std_peak_interval(data)
-    perc_time_rebelling = perc_time_rebel(data)
-    perc_time_in_peace = perc_time_calm(data)
-    links = data["links"][0]
+    frac_time_rebelling = perc_time_rebel(data)
+    frac_time_in_peace = perc_time_calm(data)
     run = data["run"][0]
+    
+    col_names = data.columns
+    distinct_column_name = str(col_names[6])
+    
+    value = data[distinct_column_name][0]
     
     df_dict = {
         "mean_peak_size": [mean_peak_height],
         "std_peak_size": [std_peak_height],
         "mean_peak_interval": [mean_peak_int],
         "std_peak_interval": [std_peak_int],
-        "perc_time_rebel": [perc_time_rebelling],
-        "perc_time_calm": [perc_time_in_peace],
+        "frac_time_rebel": [frac_time_rebelling],
+        "frac_time_calm": [frac_time_in_peace],
         "peaks": [peaks],
-        "links": [links],
+        distinct_column_name: [value],
         "run": [run]
         }
     
