@@ -1,6 +1,6 @@
-# Epstein Civil Violence Model with an Media and Social Media component
+# ABM project of Dante de Lang, Louky Schutten, Caterina Buranelli, Ignas Krikštaponis and Kamiel Gulpen. 
 
-# ABM project of Dante de Lang, Louky Schutten, Caterina Buranelli, Ignas Krikštaponis and Kamiel Gulpen
+## Epstein Civil Violence Model with an Media and Social Media component
 
 ## The model
 
@@ -20,15 +20,16 @@ The model can then be played by executing: ``run.py`` in this directory. e.g.
 Then open your browser to [http://127.0.0.1:8521/](http://127.0.0.1:8521/) and press Reset, then Run. 
 
 
-![GitHub Logo](Model.png)
-Format: ![Alt Text](url)
-
+![Model](Model.png)
 
 This shows how the agents move in the grid as shown above. The red dots represent the active citizens, the green dots the fighting citizens and the blue dots the quiscent citizens. The small black dots are the cops.
 
-## Files
+## Folders and Files
 
-* ``EpsteinCivilViolence.py``: Core model and agent code.
+
+# folder: epstein_civil_violence_Normal+Network Grid : Core model and agent code .
+
+
 * ``EpsteinCivilViolenceServer.py``: Sets up the interactive visualization.
 * ``Epstein Civil Violence.ipynb``: Jupyter notebook conducting some preliminary analysis of the model.
 
