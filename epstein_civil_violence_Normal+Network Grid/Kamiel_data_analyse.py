@@ -12,19 +12,19 @@ frames = []
 distribution = []
 net = []
 sum_actives = []
-networks = ["Barabasi", "Renyi", "Small-world","None"]
+networks = ["Barabasi"]
 n_sim = 400
 time_peaks = []
 peak_interval = []
 
-plot = True
-
+plot = False
+legitimacy = ["Global","Fixed","Local"]
 vision = 7
 for network in networks:
 
     
     if plot == True:
-        model_out = pd.read_csv(f"Folder_{vision}/model_temp_{vision}_{network}_{legitimacy_kind}_0.csv")
+        model_out = pd.read_csv(f"/model_temp_{vision}_{network}_{legitimacy_kind}_0.csv")
         result = model_out
         # plt.figure(figsize=(15,8))
         ax = sns.lineplot(data=result, x="Unnamed: 0", y="Active", color="firebrick")
@@ -53,43 +53,44 @@ for network in networks:
         plt.show()
     
     else:
-        model_out = pd.read_csv(f"Data_vision_{vision}/model_temp_{network}_{legitimacy_kind}_0.csv")
-        for n in range(n_sim):
-            # epstein_civil_violence_Normal+Network Grid\Data_vision_7\model_temp_Barabasi_Global_1.csv
-            
-            actives = model_out["Active"]
-            actives = np.array(actives)
-
-            s_actives = sum(actives)
-        
-            f_peaks = find_peaks(actives, height=50, distance = 5)[1]
-            f_peaks_time, _ = find_peaks(actives, height=50, distance = 5)
-
-            # print(f_peaks_time)
-            
-            peaks = f_peaks["peak_heights"]
-            mean_peaksize = np.mean(peaks)
-            std_peaksize = np.std(peaks)
-        
-            net.append(network)
-            sum_actives.append(s_actives)
-
-        
-            for i in range(len(f_peaks_time) - 1):
-                peak_interval.append(f_peaks_time[i + 1] - f_peaks_time[i])
+        for legitimacy_kind in legitimacy:
+            for n in range(n_sim):
+                model_out = pd.read_csv(f"Data_Legitimacy/model_temp_{vision}_{network}_{legitimacy_kind}_{n}.csv")
+                # epstein_civil_violence_Normal+Network Grid\Data_vision_7\model_temp_Barabasi_Global_1.csv
                 
-            mean_peak_interval  = np.mean(peak_interval)
-            std_peak_interval = np.std(peak_interval)
+                actives = model_out["Active"]
+                actives = np.array(actives)
 
+                s_actives = sum(actives)
+            
+                f_peaks = find_peaks(actives, height=50, distance = 5)[1]
+                f_peaks_time, _ = find_peaks(actives, height=50, distance = 5)
 
+                # print(f_peaks_time)
                 
-            perc_reb = sum(active > 50 for active in actives)/len(actives)
-            perc_calm = sum(active == 0 for active in actives)/len(actives)
+                peaks = f_peaks["peak_heights"]
+                mean_peaksize = np.mean(peaks)
+                std_peaksize = np.std(peaks)
+            
+                net.append(network)
+                sum_actives.append(s_actives)
 
-            distribution.append([network,len(peaks), mean_peaksize,std_peaksize, mean_peak_interval, std_peak_interval, s_actives, perc_reb, perc_calm])
-            if n > 0:
-                model_out.drop([0])
-            frames.append(model_out)
+            
+                for i in range(len(f_peaks_time) - 1):
+                    peak_interval.append(f_peaks_time[i + 1] - f_peaks_time[i])
+                    
+                mean_peak_interval  = np.mean(peak_interval)
+                std_peak_interval = np.std(peak_interval)
+
+
+                    
+                perc_reb = sum(active > 50 for active in actives)/len(actives)
+                perc_calm = sum(active == 0 for active in actives)/len(actives)
+
+                distribution.append([network,len(peaks), mean_peaksize,std_peaksize, mean_peak_interval, std_peak_interval, s_actives, perc_reb, perc_calm])
+                if n > 0:
+                    model_out.drop([0])
+                frames.append(model_out)
 
 # result = pd.concat(frames)
 # # plt.style.use('ggplot')

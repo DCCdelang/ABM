@@ -12,7 +12,7 @@ frames = []
 distribution = []
 net = []
 sum_actives = []
-networks = ["Barabasi", "Renyi", "Small-world","None"]
+networks = ["Barabasi", "None", "Renyi", "Small-world"]
 n_sim = 400
 time_peaks = []
 peak_interval = []
@@ -116,14 +116,56 @@ ax.set_ylabel(x, size = 13)
 
 plt.show()
 
-ax = sns.boxplot(x="Network", y=x, data=df)
-# ax.set_title(f"Boxplot of {x}", size = 13)
-ax.set_xlabel(" ", size = 13)
-ax.set_ylabel('Frequency', size = 13)
-plt.xticks(fontsize=12)
-plt.yticks(fontsize=12)
-plt.savefig(f"data = {x}.pdf")
-plt.show()
+
+x_s = ["Total actives", "Peaks", "Mean peak interval", "Mean peak size"]
+
+for x in x_s:
+    ax = sns.violinplot(x="Network", y=x, data=df)
+    # ax.set_title(f"Boxplot of {x}", size = 13)
+    ax.set_xlabel(" ", size = 14)
+
+    plt.locator_params(nbins=4)
+    plt.ylabel("Frequency", fontsize=16)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    plt.tight_layout()
+    plt.savefig(f"data = {x}.pdf")
+   
+    plt.show()
+    
+    None_ = df.loc[(df['Network'] == 'None')]
+    Renyi = df.loc[(df['Network'] == 'Renyi')]
+    Barabasi = df.loc[(df['Network'] == 'Barabasi')]
+    Small_world = df.loc[(df['Network'] == 'Small-world')]
+
+
+    None_ = np.array(None_[x])
+    Renyi = np.array(Renyi[x])
+    Barabasi = np.array(Barabasi[x])
+    Small_world = np.array(Small_world[x])
+    plt.show()
+
+
+    None_ = np.nan_to_num(None_,np.nan)
+    Renyi = np.nan_to_num(Renyi,np.nan)
+    Barabasi =  np.nan_to_num(Barabasi,np.nan)
+    Small_world =  np.nan_to_num(Small_world,np.nan)
+
+    print(x)
+    print("\n")
+
+    print("Shapiro None: ",stats.shapiro(None_))
+    print("Shapiro Renyi: ",stats.shapiro(Renyi))
+    print("Shapiro Barabasi: ",stats.shapiro(Barabasi))
+    print("Shapiro Small world: ",stats.shapiro(Small_world))
+
+    print("t-test None - Renyi", stats.ttest_ind(None_,Renyi))
+    print("t-test None - Barabasi", stats.ttest_ind(None_,Barabasi))
+    print("t-test None - Small world", stats.ttest_ind(None_,Small_world))
+    print("t-test Barabasi - Renyi", stats.ttest_ind(Barabasi,Renyi))
+    print("t-test Small world - Renyi", stats.ttest_ind(Small_world,Renyi))
+    print("t-test Barabasi - Small-world", stats.ttest_ind(Barabasi,Small_world))
+    print("\n")
 
 
 
