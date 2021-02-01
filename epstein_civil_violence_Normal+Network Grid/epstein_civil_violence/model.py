@@ -57,7 +57,7 @@ class EpsteinCivilViolence(Model):
         max_fighting_time=1, # NEW variable
         smart_cops = False,
         legitimacy_kind = "Global", # choose between "Fixed","Global","Local",
-        network = "Barabasi" # "Barbasi", "None", "Renyi", "small world(else)"
+        network = "Barabasi"
     ):
         super().__init__()
         self.height = height
@@ -142,9 +142,6 @@ class EpsteinCivilViolence(Model):
             n = self.N_agents
             probability =  ((np.log(n))/n)
             self.G = nx.erdos_renyi_graph(self.N_agents, probability+0.001, seed)
-        elif self.network == "None":
-            seed = np.random.randint(0,90000)
-            self.G = nx.erdos_renyi_graph(self.N_agents, 0, seed)
         else:
             seed = np.random.randint(0,90000)
             self.G = nx.watts_strogatz_graph(self.N_agents, links,0.5, seed)
@@ -153,11 +150,11 @@ class EpsteinCivilViolence(Model):
         random.shuffle(self.citizen_ids)
         mapping = dict(zip(node_list, self.citizen_ids))
         self.G = nx.relabel_nodes(self.G, mapping)
-
+        print("Hallo")
         self.running = True
         self.datacollector.collect(self)
         
-        # self.draw_network(self.G)
+        self.draw_network(self.G)
 
     def step(self):
         """
@@ -181,7 +178,9 @@ class EpsteinCivilViolence(Model):
 
         options = {'node_color': 'green', 'node_size': edges, 'width': 0.2, "font_size": 6, 'font_color': "red"}
         nx.draw(network, with_labels=False, font_weight='bold', **options)
+        plt.savefig(f"{self.network} network .pdf")
         plt.show()
+        
         return 1
 
 
