@@ -94,9 +94,10 @@ for network in networks:
     plt.show()
     
 """
-"""
+
 #networks = ["Barabasi"]
 pal = ["forestgreen", "firebrick", "darkorange", "mediumorchid"]
+pal = [ "green", "red", "blue","orange"]
 #sns.set(rc={'figure.figsize':(15,8)})
 for network in networks:
     frames = []
@@ -120,7 +121,7 @@ for network in networks:
             sns.lineplot(data=model_out, x="Unnamed: 0", y="Jailed", color = pal[0], linewidth=0.8)           
     #plt.figure(figsize=(8,15))        
     
-    #plt.savefig(f"Long_run_figures/All_sim_{network}.pdf")
+    plt.savefig(f"Long_run_figures/All_sim_{network}.pdf")
     plt.show()
 """
 pal = ["forestgreen", "firebrick", "darkorange", "mediumorchid"]
@@ -143,5 +144,5 @@ for network in networks:
     
     plt.savefig(f"Long_run_figures/Single_sim_{network}.pdf")
     plt.show()
-
+"""
 # %%
