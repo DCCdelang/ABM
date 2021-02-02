@@ -32,7 +32,7 @@ The data from the model can be retrieved by executing: ``model_run.py``
 This will run the model for 200 iterations and returns a graph of the state of the citizens over time, a graph of the perceived legitimacy over time and features for analysing the results.
 
 ## Paper on the model
-A more elaborate view of this model can be found in the paper .....
+A more elaborate view of this model can be found in the paper by Buranelli et al.
 
 ## Folders
 * ``epstein_civil_violence_Normal+Network Grid``: In the Data, image and experiment folder files can be found which were used for the above mentioned paper.
