@@ -37,4 +37,4 @@ A more elaborate view of this model can be found in the paper .....
 ## Folders
 * ``epstein_civil_violence_Normal+Network Grid``: In the Data, image and experiment folder files can be found which were used for the above mentioned paper.
 * ``epstein_civil_violence_NormalGrid``: The data folder is used for experiments of the above mentioned paper.
-* ``epstein_civil_violence`: This folder can be found in both above mentioned folders. In this folder the core model and agent code can be found.
+* ``epstein_civil_violence``: This folder can be found in both above mentioned folders. In this folder the core model and agent code can be found.
