@@ -1,6 +1,6 @@
 # ABM project of Dante de Lang, Louky Schutten, Caterina Buranelli, Ignas Krikštaponis and Kamiel Gulpen. 
 
-## Epstein Civil Violence Model with an Media and Social Media component
+## Epstein Civil Violence Model with a Media and Social Media component
 
 ## The model
 
