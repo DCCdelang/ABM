@@ -86,7 +86,7 @@ class Citizen(Agent):
 
         if self.jail_sentence:
             self.jail_sentence -= 1
-            #Louky: (4) after a jailed agent comes out of jail, her state is set to quiet instead of her previous state before arrest (active).
+            # After a jailed agent comes out of jail, her state is set to quiet instead of her previous state before arrest (active).
             if not self.jail_sentence:
                 self.condition = "Quiescent"
             return  # no other changes or movements if agent is in jail.
@@ -117,8 +117,6 @@ class Citizen(Agent):
                     break
             if itterations == N_network_neighbors:
                 break
-                
-        #print(f"2 Active: {actives/N_network_neighbors*100} %")
 
         if self.model.legitimacy_kind == "Fixed":
             self.regime_legitimacy
@@ -180,7 +178,7 @@ class Citizen(Agent):
             ):
                 actives_in_vision += 1
                 
-        #LOUKY: rounding the actives to cops ratio to min integer (1)
+        #rounding the actives to cops ratio to min integer (1)
         self.ratio_c_a = int(cops_in_vision/ actives_in_vision)
         
         self.arrest_probability = 1 - math.exp(
@@ -212,9 +210,6 @@ class Citizen(Agent):
         L_leg = self.N_quiet/self.N_agents
         L_just = 1/2*(1-((self.N_active + self.N_fighting)/self.N_agents)) + 1/2*(1-math.exp(-math.log(2)/2*(self.N_agents/(self.N_active + self.N_jailed + self.N_fighting + 1))))
         L_consent = L_leg
-        # print(self.N_quiet,self.N_active,self.N_jailed,self.N_fighting,self.N_agents)
-        # print(L_leg,L_consent,L_just)
-        # raise ValueError
 
         return self.regime_legitimacy * (1/4*(L_leg+L_consent)+1/2*L_just)
 
@@ -289,7 +284,7 @@ class Cop(Agent):
             
         elif self.model.movement and self.empty_neighbors:
             if self.model.smart_cops:
-                #Ignas: implement "intelligent" movement of cops
+          
                 utilities = []
                 # itterate over available empty spaces for movement
                 for pos in self.empty_neighbors:
@@ -302,11 +297,7 @@ class Cop(Agent):
                             if agent.breed == "citizen" and agent.condition == "Active" and agent.jail_sentence == 0:
                                 utility += 10
                             elif agent.breed == "citizen" and agent.condition == "Fighting":
-                                utility += 10
-                            # elif agent.breed == "citizen" and agent.condition == "Quiescent":
-                            #     utility -= 2
-                            # elif agent.breed == "cop":
-                            #     utility += 5    
+                                utility += 10   
                         utilities.append(utility)
                     else:
                         utilities.append(-100)

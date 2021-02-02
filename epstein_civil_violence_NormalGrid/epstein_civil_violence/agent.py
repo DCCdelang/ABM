@@ -85,10 +85,10 @@ class Citizen(Agent):
 
         if self.jail_sentence:
             self.jail_sentence -= 1
-            #Louky: (4) after a jailed agent comes out of jail, her state is set to quiet instead of her previous state before arrest (active).
+            # After a jailed agent comes out of jail, her state is set to quiet instead of her previous state before arrest (active).
             if not self.jail_sentence:
                 self.condition = "Quiescent"
-            return  # no other changes or movements if agent is in jail.
+            return  # No other changes or movements if agent is in jail.
 
         self.update_neighbors()
         self.update_estimated_arrest_probability()
@@ -135,7 +135,7 @@ class Citizen(Agent):
 
         """
         cops_in_vision = len([c for c in self.neighbors if c.breed == "cop"])
-        actives_in_vision = 1.0  # citizen counts herself
+        actives_in_vision = 1.0  # Citizen counts herself
         for c in self.neighbors:
             if (
                 c.breed == "citizen"
@@ -149,7 +149,7 @@ class Citizen(Agent):
             ):
                 actives_in_vision += 1
                 
-        #LOUKY: rounding the actives to cops ratio to min integer (1)
+        # Rounding the actives to cops ratio to min integer (1)
         self.ratio_c_a = int(cops_in_vision/ actives_in_vision)
         
         self.arrest_probability = 1 - math.exp(
@@ -181,9 +181,6 @@ class Citizen(Agent):
         L_leg = self.N_quiet/self.N_agents
         L_just = 1/2*(1-((self.N_active + self.N_fighting)/self.N_agents)) + 1/2*(1-math.exp(-math.log(2)/2*(self.N_agents/(self.N_active + self.N_jailed + self.N_fighting + 1))))
         L_consent = L_leg
-        # print(self.N_quiet,self.N_active,self.N_jailed,self.N_fighting,self.N_agents)
-        # print(L_leg,L_consent,L_just)
-        # raise ValueError
 
         return self.regime_legitimacy * (1/4*(L_leg+L_consent)+1/2*L_just)
 
@@ -237,13 +234,12 @@ class Cop(Agent):
                 
         if active_neighbors:
             arrestee = self.random.choice(active_neighbors)
-            #Louky: Moving the cop to the arrested agent position (2)
+            # Moving the cop to the arrested agent position (2)
             if self.model.movement:
                 self.model.grid.move_agent(self, arrestee.pos)
             sentence = self.random.randint(0, self.model.max_jail_term)
             arrestee.jail_sentence = sentence
 
-            # fighttime = self.random.randint(0,self.model.max_fighting_time)
             fighttime = self.model.max_fighting_time
             arrestee.fighting_time_cit = fighttime
             self.fighting_time_cop = fighttime
@@ -251,7 +247,7 @@ class Cop(Agent):
             
         elif self.model.movement and self.empty_neighbors:
             if self.model.smart_cops:
-                #Ignas: implement "intelligent" movement of cops
+
                 utilities = []
                 # itterate over available empty spaces for movement
                 for pos in self.empty_neighbors:

@@ -48,9 +48,9 @@ class EpsteinCivilViolence(Model):
         arrest_prob_constant=2.3,
         movement=True,
         max_iters=500,
-        max_fighting_time=1, # NEW variable
+        max_fighting_time=1, 
         smart_cops = False,
-        legitimacy_kind = "Global", # choose between "Fixed","Global","Local"
+        legitimacy_kind = "Global", 
     ):
         super().__init__()
         self.height = height
@@ -112,7 +112,7 @@ class EpsteinCivilViolence(Model):
                     risk_aversion=self.random.random(),
                     threshold=self.active_threshold,
                     vision=self.citizen_vision,
-                    legitimacy_feedback=self.legitimacy_feedback, # ADDED parameter
+                    legitimacy_feedback=self.legitimacy_feedback, 
                 )
                 unique_id += 1
                 self.grid[y][x] = citizen
@@ -150,12 +150,9 @@ class EpsteinCivilViolence(Model):
         N_fighting = model.count_fighting(model)
 
         L_leg = N_quiet/model.N_agents
-        # Zero needs to be replaced by N_fighting --> Still has to be implemented in model/agent
         L_just = 1/2*(1-((N_active+N_fighting)/model.N_agents)) + 1/2*(1-math.exp(-math.log(2)/2*(model.N_agents/(N_active + N_jailed + N_fighting + 1))))
         L_consent = L_leg
-        # print(N_quiet,N_active,N_jailed,N_fighting,model.N_agents)
-        # print(L_leg,L_consent,L_just)
-        # raise ValueError
+
     
         return model.legitimacy * (1/4*(L_leg+L_consent)+1/2*L_just)
 

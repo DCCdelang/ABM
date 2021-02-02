@@ -134,7 +134,6 @@ class EpsteinCivilViolence(Model):
        
         
         # initialise a network
-      
         if self.network == "Barabasi":
             self.G = nx.barabasi_albert_graph(self.N_agents, links)
         elif self.network == "Renyi":
@@ -150,11 +149,11 @@ class EpsteinCivilViolence(Model):
         random.shuffle(self.citizen_ids)
         mapping = dict(zip(node_list, self.citizen_ids))
         self.G = nx.relabel_nodes(self.G, mapping)
-        print("Hallo")
         self.running = True
         self.datacollector.collect(self)
         
-        self.draw_network(self.G)
+        # When enabeled the user can see a visualisation of the used graph 
+        #self.draw_network(self.G)
 
     def step(self):
         """
@@ -172,6 +171,9 @@ class EpsteinCivilViolence(Model):
             print("step", self.iteration)
 
     def draw_network(self, network):
+        """
+        Draws the network used by the model
+        """
         edges = []
         for g in self.G.nodes:
             edges.append(len(network.edges(g))*1)
@@ -196,12 +198,9 @@ class EpsteinCivilViolence(Model):
         N_fighting = model.count_fighting(model)
 
         L_leg = N_quiet/model.N_agents
-        # Zero needs to be replaced by N_fighting --> Still has to be implemented in model/agent
         L_just = 1/2*(1-((N_active+N_fighting)/model.N_agents)) + 1/2*(1-math.exp(-math.log(2)/2*(model.N_agents/(N_active + N_jailed + N_fighting + 1))))
         L_consent = L_leg
-        # print(N_quiet,N_active,N_jailed,N_fighting,model.N_agents)
-        # print(L_leg,L_consent,L_just)
-        # raise ValueError
+
     
         return model.legitimacy * (1/4*(L_leg+L_consent)+1/2*L_just)
 
@@ -251,7 +250,6 @@ class EpsteinCivilViolence(Model):
     def count_peaks(model):
         model_out = model.datacollector.get_model_vars_dataframe()
         peaks, _ = find_peaks(model_out["Active"], height=50, distance = 5)
-        # print("Indices of peaks:", peaks, "Amount:", len(peaks))
         return len(peaks)
     
     @staticmethod
